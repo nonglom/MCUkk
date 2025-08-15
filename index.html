@@ -1,0 +1,2847 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบติดตามแผนงาน - สำนักวิชาการ วิทยาเขตขอนแก่น</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- DataTables CSS and JS -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.7/css/dataTables.tailwindcss.min.css">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body { font-family: 'Sarabun', sans-serif; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .priority-high { background: linear-gradient(135deg, #fce7f3, #fbcfe8); border-left: 4px solid #ec4899; }
+        .priority-medium { background: linear-gradient(135deg, #fef3c7, #fde68a); border-left: 4px solid #f59e0b; }
+        .priority-low { background: linear-gradient(135deg, #ecfdf5, #d1fae5); border-left: 4px solid #10b981; }
+        .pink-gradient { background: linear-gradient(135deg, #fce7f3, #f3e8ff); }
+        .card-shadow { box-shadow: 0 10px 25px -5px rgba(236, 72, 153, 0.1), 0 10px 10px -5px rgba(236, 72, 153, 0.04); }
+        .hover-lift { transition: transform 0.2s ease-in-out; }
+        .hover-lift:hover { transform: translateY(-2px); }
+        
+        /* DataTable Custom Styles */
+        .dataTables_wrapper .dataTables_length,
+        .dataTables_wrapper .dataTables_filter,
+        .dataTables_wrapper .dataTables_info,
+        .dataTables_wrapper .dataTables_paginate {
+            color: #374151;
+            font-family: 'Sarabun', sans-serif;
+        }
+        
+        .dataTables_wrapper .dataTables_paginate .paginate_button {
+            padding: 0.5rem 0.75rem;
+            margin: 0 0.125rem;
+            border-radius: 0.5rem;
+            border: 1px solid #d1d5db;
+            background: white;
+            color: #374151;
+        }
+        
+        .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+            background: #f9fafb;
+            border-color: #ec4899;
+            color: #ec4899;
+        }
+        
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+            background: #ec4899;
+            border-color: #ec4899;
+            color: white;
+        }
+        
+        .dataTables_wrapper .dataTables_filter input {
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            margin-left: 0.5rem;
+        }
+        
+        .dataTables_wrapper .dataTables_filter input:focus {
+            outline: none;
+            border-color: #ec4899;
+            box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.1);
+        }
+        
+        table.dataTable thead th {
+            background: #f9fafb;
+            border-bottom: 2px solid #e5e7eb;
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        table.dataTable tbody tr:hover {
+            background-color: #fdf2f8;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-pink-50 to-purple-50 min-h-screen">
+    <!-- Header with Logo -->
+    <header class="bg-white shadow-lg border-b-4 border-pink-400">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <img src="https://i.postimg.cc/rmSGJ1w8/images.png" alt="มหาวิทยาลัยมหาจุฬาลงกรณราชวิทยาลัย" class="h-16 w-16 object-contain">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-800">ระบบติดตามแผนงาน</h1>
+                        <p class="text-sm text-gray-600">สำนักวิชาการ วิทยาเขตขอนแก่น มหาวิทยาลัยมหาจุฬาลงกรณราชวิทยาลัย</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <div class="mb-2">
+                        <p class="text-sm text-gray-600">ผู้ใช้งาน: นายนิรุต ป้องสีดา</p>
+                        <p class="text-xs text-gray-500">ผู้อำนวยการสำนักวิชาการ</p>
+                    </div>
+                    <!-- Auto-refresh Controls -->
+                    <div class="flex items-center space-x-2 text-xs">
+                        <div id="lastRefreshTime" class="text-gray-500">🔄 กำลังโหลด...</div>
+                        <button onclick="manualRefresh()" class="px-2 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded text-xs transition-colors" title="รีเฟรชข้อมูลทันที">
+                            🔄 รีเฟรช
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Auto-refresh Control Panel -->
+    <div class="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200">
+        <div class="container mx-auto px-6 py-3">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-6">
+                    <div class="flex items-center space-x-2">
+                        <span class="text-sm font-medium text-gray-700">🔄 อัปเดตอัตโนมัติ:</span>
+                        <span id="autoRefreshStatus" class="text-sm text-green-600 font-medium">🟢 เปิดใช้งาน (ทุก 2 นาที)</span>
+                    </div>
+                    
+                    <div class="flex items-center space-x-2">
+                        <label for="refreshIntervalSelect" class="text-sm text-gray-600">ช่วงเวลา:</label>
+                        <select id="refreshIntervalSelect" onchange="changeRefreshInterval()" class="px-2 py-1 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-pink-400 focus:border-pink-400">
+                            <option value="1">1 นาที</option>
+                            <option value="2" selected>2 นาที</option>
+                            <option value="5">5 นาที</option>
+                            <option value="10">10 นาที</option>
+                            <option value="30">30 นาที</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-3">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse" id="connectionIndicator"></div>
+                        <span class="text-xs text-gray-600" id="connectionStatus">เชื่อมต่อแล้ว</span>
+                    </div>
+                    
+                    <button id="autoRefreshToggle" onclick="toggleAutoRefresh()" class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors text-sm">
+                        ⏸️ หยุดอัปเดตอัตโนมัติ
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Refresh Status Notification -->
+    <div id="refreshStatus" class="fixed top-4 right-4 px-4 py-2 rounded-lg border text-sm font-medium z-50 transition-all duration-300" style="display: none;"></div>
+
+    <!-- Navigation Tabs -->
+    <nav class="bg-white shadow-md">
+        <div class="container mx-auto px-6">
+            <div class="flex space-x-8">
+                <button onclick="showTab('assignment')" class="tab-btn py-4 px-6 text-gray-700 border-b-2 border-transparent hover:border-pink-400 hover:text-pink-600 transition-colors font-medium active">
+                    📋 มอบหมายงาน
+                </button>
+                <button onclick="showTab('dashboard')" class="tab-btn py-4 px-6 text-gray-700 border-b-2 border-transparent hover:border-pink-400 hover:text-pink-600 transition-colors font-medium">
+                    📊 Dashboard
+                </button>
+                <button onclick="showTab('summary')" class="tab-btn py-4 px-6 text-gray-700 border-b-2 border-transparent hover:border-pink-400 hover:text-pink-600 transition-colors font-medium">
+                    📈 สรุปงาน
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-6 py-8">
+        <!-- Assignment Tab -->
+        <div id="assignment" class="tab-content active">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Create New Task Section -->
+                <div class="lg:col-span-2">
+                    <div class="bg-white rounded-xl card-shadow hover-lift p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <h2 class="text-xl font-bold text-gray-800 flex items-center">
+                                <span class="bg-pink-100 p-2 rounded-lg mr-3">🌟</span>
+                                สร้างงานใหม่
+                            </h2>
+                            <button onclick="toggleNewTaskForm()" class="bg-gradient-to-r from-pink-400 to-pink-500 hover:from-pink-500 hover:to-pink-600 text-white px-6 py-2 rounded-lg font-medium transition-all duration-200 shadow-lg hover:shadow-xl">
+                                💖 สร้างงานใหม่
+                            </button>
+                        </div>
+
+                        <!-- New Task Form -->
+                        <div id="newTaskForm" class="hidden space-y-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">ชื่อเรื่อง</label>
+                                    <input type="text" id="taskTitle" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-400 focus:border-pink-400 transition-colors" placeholder="หัวข้อหลักของงาน">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">ผู้รับผิดชอบ</label>
+                                    <select id="taskAssignee" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-400 focus:border-pink-400 transition-colors">
+                                        <option value="">เลือกผู้รับผิดชอบ</option>
+                                        <option value="นางฤดี แสงเดือนฉาย">นางฤดี แสงเดือนฉาย</option>
+                                        <option value="นายนิรันดร เลิศวีรพล">นายนิรันดร เลิศวีรพล</option>
+                                        <option value="นางรพีพร มณีวรรณ">นางรพีพร มณีวรรณ</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">ตำแหน่ง</label>
+                                <select id="taskPosition" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-400 focus:border-pink-400 transition-colors">
+                                    <option value="">เลือกตำแหน่ง</option>
+                                    <option value="นักวิชาการศึกษา ชำนาญการ">นักวิชาการศึกษา ชำนาญการ</option>
+                                    <option value="นักวิชาการคอมพิวเตอร์ ชำนาญการ">นักวิชาการคอมพิวเตอร์ ชำนาญการ</option>
+                                    <option value="นักจัดการงานทั่วไป ชำนาญการ">นักจัดการงานทั่วไป ชำนาญการ</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">รายละเอียด</label>
+                                <textarea id="taskDescription" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-400 focus:border-pink-400 transition-colors" placeholder="คำอธิบายงานและสิ่งที่ต้องดำเนินการ"></textarea>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">กลุ่มงาน</label>
+                                    <select id="taskGroup" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-400 focus:border-pink-400 transition-colors">
+                                        <option value="">เลือกกลุ่มงาน</option>
+                                        <option value="กลุ่มงานทะเบียนและวัดผล">กลุ่มงานทะเบียนและวัดผล</option>
+                                        <option value="กลุ่มงานห้องสมุดและสารสนเทศ">กลุ่มงานห้องสมุดและสารสนเทศ</option>
+                                        <option value="กลุ่มงานวิจัยและคุณภาพการศึกษา">กลุ่มงานวิจัยและคุณภาพการศึกษา</option>
+                                        <option value="กลุ่มงานส่งเสริมพระพุทธศาสนาและบริการสังคม">กลุ่มงานส่งเสริมพระพุทธศาสนาและบริการสังคม</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">ระดับความสำคัญ</label>
+                                    <select id="taskPriority" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-400 focus:border-pink-400 transition-colors">
+                                        <option value="">เลือกระดับความสำคัญ</option>
+                                        <option value="สูง">💖 สูง</option>
+                                        <option value="ปานกลาง">💛 ปานกลาง</option>
+                                        <option value="ต่ำ">💚 ต่ำ</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">สถานะ</label>
+                                    <select id="taskStatus" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-400 focus:border-pink-400 transition-colors">
+                                        <option value="รอการอนุมัติ">รอการอนุมัติ</option>
+                                        <option value="กำลังดำเนินการ">กำลังดำเนินการ</option>
+                                        <option value="รอตรวจสอบ">รอตรวจสอบ</option>
+                                        <option value="เสร็จสิ้น">เสร็จสิ้น</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">วันเริ่มต้น</label>
+                                    <input type="date" id="taskStartDate" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-400 focus:border-pink-400 transition-colors">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">วันสิ้นสุด</label>
+                                    <input type="date" id="taskEndDate" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-400 focus:border-pink-400 transition-colors">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">แนบไฟล์</label>
+                                <input type="file" id="taskFiles" multiple class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-400 focus:border-pink-400 transition-colors" onchange="handleFileSelect(event)">
+                                <div id="fileList" class="mt-2 space-y-2"></div>
+                            </div>
+
+                            <div class="flex justify-end space-x-4 pt-4">
+                                <button onclick="toggleNewTaskForm()" class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">ยกเลิก</button>
+                                <button onclick="createTask()" class="px-6 py-2 bg-gradient-to-r from-pink-400 to-pink-500 hover:from-pink-500 hover:to-pink-600 text-white rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl">✨ สร้างงาน</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Task Management Panel -->
+                <div>
+                    <div class="bg-white rounded-xl card-shadow hover-lift p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-bold text-gray-800 flex items-center">
+                                <span class="bg-pink-100 p-2 rounded-lg mr-3">🎯</span>
+                                งานที่ต้องจัดการ
+                            </h3>
+                            <select id="managementStatusFilter" onchange="filterManagementTasks()" class="px-3 py-1 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-pink-400 focus:border-pink-400 transition-colors">
+                                <option value="">ทุกสถานะ</option>
+                                <option value="รอการอนุมัติ">รอการอนุมัติ</option>
+                                <option value="กำลังดำเนินการ">กำลังดำเนินการ</option>
+                                <option value="รอตรวจสอบ">รอตรวจสอบ</option>
+                                <option value="เสร็จสิ้น">เสร็จสิ้น</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Status Tabs -->
+                        <div class="flex space-x-1 mb-4 bg-gray-100 p-1 rounded-lg">
+                            <button onclick="showManagementStatus('รอการอนุมัติ')" class="management-status-tab flex-1 px-3 py-2 text-sm font-medium rounded-md transition-colors bg-white text-gray-900 shadow-sm" data-status="รอการอนุมัติ">
+                                🌙 รอการอนุมัติ
+                            </button>
+                            <button onclick="showManagementStatus('กำลังดำเนินการ')" class="management-status-tab flex-1 px-3 py-2 text-sm font-medium rounded-md transition-colors text-gray-600 hover:text-gray-900" data-status="กำลังดำเนินการ">
+                                🌸 กำลังดำเนินการ
+                            </button>
+                            <button onclick="showManagementStatus('รอตรวจสอบ')" class="management-status-tab flex-1 px-3 py-2 text-sm font-medium rounded-md transition-colors text-gray-600 hover:text-gray-900" data-status="รอตรวจสอบ">
+                                🌺 รอตรวจสอบ
+                            </button>
+                            <button onclick="showManagementStatus('เสร็จสิ้น')" class="management-status-tab flex-1 px-3 py-2 text-sm font-medium rounded-md transition-colors text-gray-600 hover:text-gray-900" data-status="เสร็จสิ้น">
+                                🌟 เสร็จสิ้น
+                            </button>
+                        </div>
+
+                        <!-- Task Tables by Status -->
+                        <div id="managementTasksContainer" class="max-h-96 overflow-y-auto">
+                            <!-- Pending Tasks -->
+                            <div id="status-รอการอนุมัติ" class="management-status-content">
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-sm">
+                                        <thead class="bg-yellow-50">
+                                            <tr>
+                                                <th class="px-3 py-2 text-left text-xs font-medium text-yellow-800">ชื่อเรื่อง</th>
+                                                <th class="px-3 py-2 text-left text-xs font-medium text-yellow-800">รายละเอียด</th>
+                                                <th class="px-3 py-2 text-left text-xs font-medium text-yellow-800">วันเริ่มต้น/สิ้นสุด</th>
+                                                <th class="px-3 py-2 text-left text-xs font-medium text-yellow-800">วันที่เหลือ</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="pendingTasksTable" class="divide-y divide-yellow-100">
+                                            <!-- Dynamic content -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- In Progress Tasks -->
+                            <div id="status-กำลังดำเนินการ" class="management-status-content hidden">
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-sm">
+                                        <thead class="bg-blue-50">
+                                            <tr>
+                                                <th class="px-3 py-2 text-left text-xs font-medium text-blue-800">ชื่อเรื่อง</th>
+                                                <th class="px-3 py-2 text-left text-xs font-medium text-blue-800">รายละเอียด</th>
+                                                <th class="px-3 py-2 text-left text-xs font-medium text-blue-800">วันเริ่มต้น/สิ้นสุด</th>
+                                                <th class="px-3 py-2 text-left text-xs font-medium text-blue-800">วันที่เหลือ</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="inProgressTasksTable" class="divide-y divide-blue-100">
+                                            <!-- Dynamic content -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- Review Tasks -->
+                            <div id="status-รอตรวจสอบ" class="management-status-content hidden">
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-sm">
+                                        <thead class="bg-purple-50">
+                                            <tr>
+                                                <th class="px-3 py-2 text-left text-xs font-medium text-purple-800">ชื่อเรื่อง</th>
+                                                <th class="px-3 py-2 text-left text-xs font-medium text-purple-800">รายละเอียด</th>
+                                                <th class="px-3 py-2 text-left text-xs font-medium text-purple-800">วันเริ่มต้น/สิ้นสุด</th>
+                                                <th class="px-3 py-2 text-left text-xs font-medium text-purple-800">วันที่เหลือ</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="reviewTasksTable" class="divide-y divide-purple-100">
+                                            <!-- Dynamic content -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- Completed Tasks -->
+                            <div id="status-เสร็จสิ้น" class="management-status-content hidden">
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-sm">
+                                        <thead class="bg-green-50">
+                                            <tr>
+                                                <th class="px-3 py-2 text-left text-xs font-medium text-green-800">ชื่อเรื่อง</th>
+                                                <th class="px-3 py-2 text-left text-xs font-medium text-green-800">รายละเอียด</th>
+                                                <th class="px-3 py-2 text-left text-xs font-medium text-green-800">วันเริ่มต้น/สิ้นสุด</th>
+                                                <th class="px-3 py-2 text-left text-xs font-medium text-green-800">วันที่เหลือ</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="completedTasksTable" class="divide-y divide-green-100">
+                                            <!-- Dynamic content -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- All Tasks Table -->
+            <div class="mt-8 bg-white rounded-xl card-shadow p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-lg font-bold text-gray-800 flex items-center">
+                        <span class="bg-pink-100 p-2 rounded-lg mr-3">🎀</span>
+                        รายการงานทั้งหมด
+                    </h3>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table id="tasksDataTable" class="w-full table-auto display">
+                        <thead>
+                            <tr>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">ชื่องาน</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">วันที่สร้าง</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">วันสิ้นสุด</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">จำนวนวันที่เหลือ</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">สถานะ</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">ความสำคัญ</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">การจัดการ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Data will be populated by DataTable -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                <!-- KPI Cards -->
+                <div class="bg-gradient-to-r from-pink-400 to-pink-500 text-white p-6 rounded-xl card-shadow hover-lift">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-pink-100 text-sm font-medium">ความสำเร็จโดยรวม</p>
+                            <p class="text-3xl font-bold">75%</p>
+                            <div class="w-full bg-pink-300 rounded-full h-2 mt-2">
+                                <div class="bg-white h-2 rounded-full" style="width: 75%"></div>
+                            </div>
+                        </div>
+                        <div class="text-4xl opacity-90">🌸</div>
+                    </div>
+                </div>
+
+                <div class="bg-gradient-to-r from-purple-400 to-purple-500 text-white p-6 rounded-xl card-shadow hover-lift">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-purple-100 text-sm font-medium">ภาระงานทั้งหมด</p>
+                            <p class="text-3xl font-bold">120</p>
+                            <p class="text-purple-100 text-xs mt-1">🌺 เพิ่มขึ้น 8%</p>
+                        </div>
+                        <div class="text-4xl opacity-90">🎀</div>
+                    </div>
+                </div>
+
+                <div class="bg-gradient-to-r from-green-400 to-green-500 text-white p-6 rounded-xl card-shadow hover-lift">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-green-100 text-sm font-medium">เสร็จสมบูรณ์</p>
+                            <p class="text-3xl font-bold">90</p>
+                            <p class="text-green-100 text-xs mt-1">🌟 คุณภาพดี</p>
+                        </div>
+                        <div class="text-4xl opacity-90">💖</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                <div class="bg-white p-6 rounded-xl card-shadow hover-lift">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
+                        <span class="bg-pink-100 p-2 rounded-lg mr-3">🌸</span>
+                        ความสำเร็จรายกลุ่มงาน
+                    </h3>
+                    <canvas id="groupChart" width="400" height="200"></canvas>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl card-shadow hover-lift">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
+                        <span class="bg-pink-100 p-2 rounded-lg mr-3">🎀</span>
+                        สถานะงานโดยรวม
+                    </h3>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div>
+                            <canvas id="statusChart" width="300" height="300"></canvas>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-200">
+                                <div class="flex items-center">
+                                    <div class="w-4 h-4 bg-green-500 rounded-full mr-3"></div>
+                                    <span class="text-sm font-medium text-green-800">เสร็จสิ้น</span>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-lg font-bold text-green-600">90</div>
+                                    <div class="text-xs text-green-600">69.2%</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg border border-blue-200">
+                                <div class="flex items-center">
+                                    <div class="w-4 h-4 bg-blue-500 rounded-full mr-3"></div>
+                                    <span class="text-sm font-medium text-blue-800">กำลังดำเนินการ</span>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-lg font-bold text-blue-600">25</div>
+                                    <div class="text-xs text-blue-600">19.2%</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-purple-50 rounded-lg border border-purple-200">
+                                <div class="flex items-center">
+                                    <div class="w-4 h-4 bg-purple-500 rounded-full mr-3"></div>
+                                    <span class="text-sm font-medium text-purple-800">รอตรวจสอบ</span>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-lg font-bold text-purple-600">10</div>
+                                    <div class="text-xs text-purple-600">7.7%</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-yellow-50 rounded-lg border border-yellow-200">
+                                <div class="flex items-center">
+                                    <div class="w-4 h-4 bg-yellow-500 rounded-full mr-3"></div>
+                                    <span class="text-sm font-medium text-yellow-800">รอการอนุมัติ</span>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-lg font-bold text-yellow-600">5</div>
+                                    <div class="text-xs text-yellow-600">3.8%</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Department Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="bg-white p-6 rounded-xl card-shadow hover-lift border-l-4 border-pink-400">
+                    <div class="flex items-center mb-3">
+                        <span class="bg-pink-100 p-2 rounded-lg mr-3">🌸</span>
+                        <h4 class="font-bold text-gray-800 text-sm">กลุ่มงานทะเบียนและวัดผล</h4>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600 flex items-center">📊 งานทั้งหมด:</span>
+                            <span class="font-bold text-gray-800">30</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600 flex items-center">✅ เสร็จสมบูรณ์:</span>
+                            <span class="font-bold text-green-600">25</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600 flex items-center">🔄 กำลังดำเนินการ:</span>
+                            <span class="font-bold text-blue-600">4</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600 flex items-center">🔍 รอตรวจสอบ:</span>
+                            <span class="font-bold text-purple-600">1</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2 mt-3">
+                            <div class="bg-gradient-to-r from-pink-400 to-pink-500 h-2 rounded-full" style="width: 83%"></div>
+                        </div>
+                        <p class="text-xs text-gray-500 text-center">83% สำเร็จ</p>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl card-shadow hover-lift border-l-4 border-purple-400">
+                    <div class="flex items-center mb-3">
+                        <span class="bg-purple-100 p-2 rounded-lg mr-3">🌺</span>
+                        <h4 class="font-bold text-gray-800 text-sm">กลุ่มงานห้องสมุดและสารสนเทศ</h4>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600 flex items-center">📊 งานทั้งหมด:</span>
+                            <span class="font-bold text-gray-800">25</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600 flex items-center">✅ เสร็จสมบูรณ์:</span>
+                            <span class="font-bold text-green-600">20</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600 flex items-center">🔄 กำลังดำเนินการ:</span>
+                            <span class="font-bold text-blue-600">3</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600 flex items-center">🔍 รอตรวจสอบ:</span>
+                            <span class="font-bold text-purple-600">2</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2 mt-3">
+                            <div class="bg-gradient-to-r from-purple-400 to-purple-500 h-2 rounded-full" style="width: 80%"></div>
+                        </div>
+                        <p class="text-xs text-gray-500 text-center">80% สำเร็จ</p>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl card-shadow hover-lift border-l-4 border-blue-400">
+                    <div class="flex items-center mb-3">
+                        <span class="bg-blue-100 p-2 rounded-lg mr-3">🌟</span>
+                        <h4 class="font-bold text-gray-800 text-sm">กลุ่มงานวิจัยและคุณภาพการศึกษา</h4>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600 flex items-center">📊 งานทั้งหมด:</span>
+                            <span class="font-bold text-gray-800">35</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600 flex items-center">✅ เสร็จสมบูรณ์:</span>
+                            <span class="font-bold text-green-600">28</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600 flex items-center">🔄 กำลังดำเนินการ:</span>
+                            <span class="font-bold text-blue-600">5</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600 flex items-center">🔍 รอตรวจสอบ:</span>
+                            <span class="font-bold text-purple-600">2</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2 mt-3">
+                            <div class="bg-gradient-to-r from-blue-400 to-blue-500 h-2 rounded-full" style="width: 80%"></div>
+                        </div>
+                        <p class="text-xs text-gray-500 text-center">80% สำเร็จ</p>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl card-shadow hover-lift border-l-4 border-green-400">
+                    <div class="flex items-center mb-3">
+                        <span class="bg-green-100 p-2 rounded-lg mr-3">💖</span>
+                        <h4 class="font-bold text-gray-800 text-sm">กลุ่มงานส่งเสริมพระพุทธศาสนาและบริการสังคม</h4>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600 flex items-center">📊 งานทั้งหมด:</span>
+                            <span class="font-bold text-gray-800">30</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600 flex items-center">✅ เสร็จสมบูรณ์:</span>
+                            <span class="font-bold text-green-600">17</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600 flex items-center">🔄 กำลังดำเนินการ:</span>
+                            <span class="font-bold text-blue-600">13</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600 flex items-center">🔍 รอตรวจสอบ:</span>
+                            <span class="font-bold text-purple-600">0</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2 mt-3">
+                            <div class="bg-gradient-to-r from-green-400 to-green-500 h-2 rounded-full" style="width: 57%"></div>
+                        </div>
+                        <p class="text-xs text-gray-500 text-center">57% สำเร็จ</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary Tab -->
+        <div id="summary" class="tab-content">
+            <div class="bg-white rounded-xl card-shadow p-6 mb-8">
+                <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="bg-pink-100 p-2 rounded-lg mr-3">📈</span>
+                    รายละเอียดสถานะงานรายกลุ่มงาน
+                </h2>
+                
+                <!-- Group Selection -->
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                        🏢 เลือกกลุ่มงาน
+                    </label>
+                    <select id="groupSelect" onchange="updateGroupSummary()" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-400 focus:border-pink-400 transition-colors">
+                        <option value="registry">📋 กลุ่มงานทะเบียนและวัดผล</option>
+                        <option value="library">📚 กลุ่มงานห้องสมุดและสารสนเทศ</option>
+                        <option value="research">🔬 กลุ่มงานวิจัยและคุณภาพการศึกษา</option>
+                        <option value="buddhism">🙏 กลุ่มงานส่งเสริมพระพุทธศาสนาและบริการสังคม</option>
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Pie Chart -->
+                    <div>
+                        <h3 class="text-lg font-medium text-gray-800 mb-4">สัดส่วนสถานะงาน</h3>
+                        <canvas id="groupPieChart" width="300" height="300"></canvas>
+                    </div>
+
+                    <!-- Detailed Table -->
+                    <div>
+                        <h3 class="text-lg font-medium text-gray-800 mb-4">รายละเอียดงาน</h3>
+                        <div class="overflow-x-auto">
+                            <table class="w-full table-auto text-sm">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-3 py-2 text-left text-xs font-medium text-gray-700">ชื่องาน</th>
+                                        <th class="px-3 py-2 text-left text-xs font-medium text-gray-700">ผู้รับผิดชอบ</th>
+                                        <th class="px-3 py-2 text-left text-xs font-medium text-gray-700">สถานะ</th>
+                                        <th class="px-3 py-2 text-left text-xs font-medium text-gray-700">ความคืบหน้า</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="groupTaskTable" class="divide-y divide-gray-200">
+                                    <!-- Dynamic content will be inserted here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Individual Performance -->
+            <div class="bg-white rounded-xl card-shadow p-6">
+                <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span class="bg-pink-100 p-2 rounded-lg mr-3">👤</span>
+                    สรุปผลการปฏิบัติงานรายบุคคล
+                </h2>
+                
+                <!-- Staff Filter -->
+                <div class="mb-6 bg-gradient-to-r from-pink-50 to-purple-50 p-4 rounded-lg border border-pink-200">
+                    <label class="block text-sm font-medium text-gray-700 mb-3 flex items-center">
+                        <span class="bg-pink-100 p-1 rounded mr-2">👥</span>
+                        เลือกผู้รับผิดชอบ
+                    </label>
+                    <select id="staffSelect" onchange="updateStaffPerformance()" class="w-full md:w-1/2 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-400 focus:border-pink-400 transition-colors bg-white shadow-sm">
+                        <option value="">-- เลือกผู้รับผิดชอบ --</option>
+                        <!-- Options will be populated dynamically from Google Sheets data -->
+                    </select>
+                </div>
+
+                <!-- Status Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                    <!-- Pending Card -->
+                    <div class="bg-gradient-to-br from-yellow-50 to-yellow-100 p-6 rounded-xl border border-yellow-200 hover-lift">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center">
+                                <div class="bg-yellow-200 p-2 rounded-lg mr-3">
+                                    <span class="text-yellow-700 text-lg">⏳</span>
+                                </div>
+                                <h4 class="font-medium text-yellow-800 text-sm">รอการอนุมัติ</h4>
+                            </div>
+                        </div>
+                        <div class="flex items-end justify-between">
+                            <div>
+                                <p class="text-2xl font-bold text-yellow-700" id="staffPendingTasks">0</p>
+                                <p class="text-xs text-yellow-600" id="staffPendingPercent">0%</p>
+                            </div>
+                            <div class="text-right">
+                                <div class="w-12 h-12 relative">
+                                    <svg class="w-12 h-12 transform -rotate-90" viewBox="0 0 36 36">
+                                        <path class="text-yellow-200" stroke="currentColor" stroke-width="3" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path>
+                                        <path class="text-yellow-500" stroke="currentColor" stroke-width="3" fill="none" stroke-dasharray="0, 100" stroke-linecap="round" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" id="staffPendingCircle"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- In Progress Card -->
+                    <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-xl border border-blue-200 hover-lift">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center">
+                                <div class="bg-blue-200 p-2 rounded-lg mr-3">
+                                    <span class="text-blue-700 text-lg">🔄</span>
+                                </div>
+                                <h4 class="font-medium text-blue-800 text-sm">กำลังดำเนินการ</h4>
+                            </div>
+                        </div>
+                        <div class="flex items-end justify-between">
+                            <div>
+                                <p class="text-2xl font-bold text-blue-700" id="staffInProgressTasks">0</p>
+                                <p class="text-xs text-blue-600" id="staffInProgressPercent">0%</p>
+                            </div>
+                            <div class="text-right">
+                                <div class="w-12 h-12 relative">
+                                    <svg class="w-12 h-12 transform -rotate-90" viewBox="0 0 36 36">
+                                        <path class="text-blue-200" stroke="currentColor" stroke-width="3" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path>
+                                        <path class="text-blue-500" stroke="currentColor" stroke-width="3" fill="none" stroke-dasharray="0, 100" stroke-linecap="round" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" id="staffInProgressCircle"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Review Card -->
+                    <div class="bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-xl border border-purple-200 hover-lift">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center">
+                                <div class="bg-purple-200 p-2 rounded-lg mr-3">
+                                    <span class="text-purple-700 text-lg">🔍</span>
+                                </div>
+                                <h4 class="font-medium text-purple-800 text-sm">รอตรวจสอบ</h4>
+                            </div>
+                        </div>
+                        <div class="flex items-end justify-between">
+                            <div>
+                                <p class="text-2xl font-bold text-purple-700" id="staffReviewTasks">0</p>
+                                <p class="text-xs text-purple-600" id="staffReviewPercent">0%</p>
+                            </div>
+                            <div class="text-right">
+                                <div class="w-12 h-12 relative">
+                                    <svg class="w-12 h-12 transform -rotate-90" viewBox="0 0 36 36">
+                                        <path class="text-purple-200" stroke="currentColor" stroke-width="3" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path>
+                                        <path class="text-purple-500" stroke="currentColor" stroke-width="3" fill="none" stroke-dasharray="0, 100" stroke-linecap="round" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" id="staffReviewCircle"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Completed Card -->
+                    <div class="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-xl border border-green-200 hover-lift">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center">
+                                <div class="bg-green-200 p-2 rounded-lg mr-3">
+                                    <span class="text-green-700 text-lg">✅</span>
+                                </div>
+                                <h4 class="font-medium text-green-800 text-sm">เสร็จสิ้น</h4>
+                            </div>
+                        </div>
+                        <div class="flex items-end justify-between">
+                            <div>
+                                <p class="text-2xl font-bold text-green-700" id="staffCompletedTasks">0</p>
+                                <p class="text-xs text-green-600" id="staffCompletedPercent">0%</p>
+                            </div>
+                            <div class="text-right">
+                                <div class="w-12 h-12 relative">
+                                    <svg class="w-12 h-12 transform -rotate-90" viewBox="0 0 36 36">
+                                        <path class="text-green-200" stroke="currentColor" stroke-width="3" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path>
+                                        <path class="text-green-500" stroke="currentColor" stroke-width="3" fill="none" stroke-dasharray="0, 100" stroke-linecap="round" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" id="staffCompletedCircle"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Performance Chart -->
+                <div class="bg-gradient-to-r from-gray-50 to-gray-100 p-6 rounded-xl border border-gray-200">
+                    <h3 class="text-lg font-medium text-gray-800 mb-4 flex items-center">
+                        <span class="bg-pink-100 p-2 rounded-lg mr-3">📊</span>
+                        กราฟแสดงผลการปฏิบัติงาน
+                    </h3>
+                    <div class="bg-white p-4 rounded-lg">
+                        <canvas id="staffPerformanceChart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Task Detail Modal -->
+    <div id="taskModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
+        <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-xl font-bold text-gray-800 flex items-center">
+                        <span class="bg-pink-100 p-2 rounded-lg mr-3">📋</span>
+                        รายละเอียดงาน
+                    </h2>
+                    <button onclick="closeTaskModal()" class="text-gray-400 hover:text-gray-600 text-2xl">×</button>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">ชื่อเรื่อง</label>
+                            <input type="text" id="modalTaskTitle" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-400 focus:border-pink-400 transition-colors" readonly>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">ผู้รับผิดชอบ</label>
+                            <input type="text" id="modalTaskAssignee" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-400 focus:border-pink-400 transition-colors" readonly>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">รายละเอียด</label>
+                        <textarea id="modalTaskDescription" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-400 focus:border-pink-400 transition-colors" readonly></textarea>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">กลุ่มงาน</label>
+                            <input type="text" id="modalTaskGroup" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-400 focus:border-pink-400 transition-colors" readonly>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">ระดับความสำคัญ</label>
+                            <input type="text" id="modalTaskPriority" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-400 focus:border-pink-400 transition-colors" readonly>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">สถานะ</label>
+                            <select id="modalTaskStatus" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-400 focus:border-pink-400 transition-colors">
+                                <option value="รอการอนุมัติ">⏳ รอการอนุมัติ</option>
+                                <option value="กำลังดำเนินการ">🔄 กำลังดำเนินการ</option>
+                                <option value="รอตรวจสอบ">🔍 รอตรวจสอบ</option>
+                                <option value="เสร็จสิ้น">✅ เสร็จสิ้น</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">วันเริ่มต้น</label>
+                            <input type="text" id="modalTaskStartDate" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-400 focus:border-pink-400 transition-colors" readonly>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">วันสิ้นสุด</label>
+                            <input type="text" id="modalTaskEndDate" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-400 focus:border-pink-400 transition-colors" readonly>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">จำนวนวันที่เหลือ</label>
+                        <input type="text" id="modalTaskDaysLeft" class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50" readonly>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">ไฟล์แนบ</label>
+                        <div id="modalFileList" class="space-y-2 p-3 bg-gray-50 rounded-lg min-h-[60px]">
+                            <p class="text-sm text-gray-500">ไม่มีไฟล์แนบ</p>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end space-x-4 pt-4 border-t">
+                        <button onclick="closeTaskModal()" class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">ยกเลิก</button>
+                        <button onclick="saveTaskChanges()" class="px-6 py-2 bg-gradient-to-r from-pink-400 to-pink-500 hover:from-pink-500 hover:to-pink-600 text-white rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl">💾 บันทึกการเปลี่ยนแปลง</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab functionality
+        function showTab(tabName) {
+            // Hide all tab contents
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => content.classList.remove('active'));
+            
+            // Remove active class from all tab buttons
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            tabButtons.forEach(btn => {
+                btn.classList.remove('border-orange-500', 'text-orange-600');
+                btn.classList.add('border-transparent', 'text-gray-700');
+            });
+            
+            // Show selected tab content
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to clicked tab button
+            event.target.classList.remove('border-transparent', 'text-gray-700');
+            event.target.classList.add('border-orange-500', 'text-orange-600');
+
+            // Initialize charts when dashboard tab is shown
+            if (tabName === 'dashboard') {
+                setTimeout(initDashboardCharts, 100);
+            } else if (tabName === 'summary') {
+                setTimeout(initSummaryCharts, 100);
+            }
+        }
+
+        // File handling functions
+        function handleFileSelect(event) {
+            const files = Array.from(event.target.files);
+            selectedFiles = [];
+            
+            files.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+                    const fileName = `${file.name.split('.')[0]}_${timestamp}.${file.name.split('.').pop()}`;
+                    
+                    selectedFiles.push({
+                        name: fileName,
+                        originalName: file.name,
+                        type: file.type,
+                        size: file.size,
+                        data: e.target.result.split(',')[1] // Remove data:mime;base64, prefix
+                    });
+                    
+                    updateFileList();
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+        
+        function updateFileList() {
+            const fileList = document.getElementById('fileList');
+            fileList.innerHTML = '';
+            
+            selectedFiles.forEach((file, index) => {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'flex items-center justify-between p-2 bg-gray-50 rounded border';
+                fileItem.innerHTML = `
+                    <div class="flex items-center">
+                        <span class="text-blue-600 mr-2">📎</span>
+                        <span class="text-sm text-gray-700">${file.originalName}</span>
+                        <span class="text-xs text-gray-500 ml-2">(${(file.size / 1024).toFixed(1)} KB)</span>
+                    </div>
+                    <button onclick="removeFile(${index})" class="text-red-500 hover:text-red-700 text-sm">✕</button>
+                `;
+                fileList.appendChild(fileItem);
+            });
+        }
+        
+        function removeFile(index) {
+            selectedFiles.splice(index, 1);
+            updateFileList();
+        }
+        
+        function displayModalFiles(files) {
+            const modalFileList = document.getElementById('modalFileList');
+            
+            if (!files || files.length === 0) {
+                modalFileList.innerHTML = '<p class="text-sm text-gray-500">ไม่มีไฟล์แนบ</p>';
+                return;
+            }
+            
+            modalFileList.innerHTML = '';
+            files.forEach(file => {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'flex items-center justify-between p-2 bg-white rounded border';
+                fileItem.innerHTML = `
+                    <div class="flex items-center">
+                        <span class="text-blue-600 mr-2">📎</span>
+                        <span class="text-sm text-gray-700">${file.name}</span>
+                    </div>
+                    <a href="${file.url}" target="_blank" class="text-blue-600 hover:text-blue-800 text-sm">ดาวน์โหลด</a>
+                `;
+                modalFileList.appendChild(fileItem);
+            });
+        }
+
+        // Task data array - will be loaded from Google Sheets
+        let tasks = [];
+
+        let currentPage = 1;
+        const tasksPerPage = 5;
+        let currentEditingTaskId = null;
+        let selectedFiles = [];
+        
+        // Apps Script Configuration
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzrUKW8QMcgQzQsYbaOAeei9_69LQTNlt6AOqwCoUed573o_CRDtZVXkD_-LhjmH_Fw/exec';
+        const SHEET_ID = '1dBg1TwDaU_54hIzk-uAZE-dg7SxgrSb3STpSLe-Tie4';
+        const FOLDER_ID = '1iSgw-P2Cxhn3pTvKa0aiJp2qOiEXJ281';
+
+        // Modal functions
+        function openTaskModal(taskId) {
+            console.log('Opening modal for task ID:', taskId);
+            const task = tasks.find(t => t['ID'] == taskId);
+            if (!task) {
+                console.error('Task not found:', taskId);
+                return;
+            }
+            
+            currentEditingTaskId = taskId;
+            
+            // Use Google Sheets field names
+            document.getElementById('modalTaskTitle').value = task['ชื่องาน'] || '';
+            document.getElementById('modalTaskAssignee').value = task['ผู้รับผิดชอบ'] || '';
+            document.getElementById('modalTaskDescription').value = task['รายละเอียด'] || '';
+            document.getElementById('modalTaskGroup').value = task['กลุ่มงาน'] || '';
+            document.getElementById('modalTaskPriority').value = task['ความสำคัญ'] || '';
+            document.getElementById('modalTaskStatus').value = task['สถานะ'] || '';
+            document.getElementById('modalTaskStartDate').value = formatDateToThai(task['วันเริ่มต้น']) || '';
+            document.getElementById('modalTaskEndDate').value = formatDateToThai(task['วันสิ้นสุด']) || '';
+            
+            // Calculate days left display
+            const daysLeft = task['จำนวนวันที่เหลือ'] || 0;
+            let daysLeftText = '';
+            if (task['สถานะ'] === 'เสร็จสิ้น') {
+                daysLeftText = 'เสร็จสิ้น';
+            } else if (daysLeft < 0) {
+                daysLeftText = `ล่าช้า ${Math.abs(daysLeft)} วัน`;
+            } else {
+                daysLeftText = `${daysLeft} วัน`;
+            }
+            document.getElementById('modalTaskDaysLeft').value = daysLeftText;
+            
+            // Display files from Google Sheets
+            const filesData = task['ไฟล์แนบ'] || '';
+            let files = [];
+            if (filesData && filesData.trim()) {
+                const fileLines = filesData.split('\n');
+                files = fileLines.map(line => {
+                    const parts = line.split(': ');
+                    return {
+                        name: parts[0] || 'ไฟล์',
+                        url: parts[1] || ''
+                    };
+                }).filter(file => file.url);
+            }
+            displayModalFiles(files);
+            
+            // Disable status dropdown if task is completed
+            const statusSelect = document.getElementById('modalTaskStatus');
+            if (task['สถานะ'] === 'เสร็จสิ้น') {
+                statusSelect.disabled = true;
+            } else {
+                statusSelect.disabled = false;
+            }
+            
+            document.getElementById('taskModal').classList.remove('hidden');
+        }
+
+        function closeTaskModal() {
+            document.getElementById('taskModal').classList.add('hidden');
+            currentEditingTaskId = null;
+        }
+
+        async function saveTaskChanges() {
+            if (currentEditingTaskId === null) return;
+            
+            const newStatus = document.getElementById('modalTaskStatus').value;
+            const taskIndex = tasks.findIndex(t => t['ID'] == currentEditingTaskId);
+            
+            if (taskIndex !== -1) {
+                try {
+                    // Show loading
+                    Swal.fire({
+                        title: 'กำลังบันทึกการเปลี่ยนแปลง...',
+                        text: 'กรุณารอสักครู่',
+                        allowOutsideClick: false,
+                        showConfirmButton: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    // Update in Google Sheets
+                    await updateTaskStatusInSheet(currentEditingTaskId, newStatus);
+                    
+                    // Update local data with correct field name
+                    tasks[taskIndex]['สถานะ'] = newStatus;
+                    
+                    // Update UI components
+                    updateTaskTable();
+                    updateManagementTasks();
+                    
+                    // Update dashboard and staff data safely with delay
+                    setTimeout(() => {
+                        try {
+                            updateDashboardData();
+                            populateStaffOptions();
+                            updateStaffPerformance();
+                        } catch (chartError) {
+                            console.error('Chart update error (non-critical):', chartError);
+                        }
+                    }, 200);
+                    
+                    // Show success message
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'บันทึกสำเร็จ!',
+                        text: 'การเปลี่ยนแปลงถูกบันทึกเรียบร้อยแล้ว',
+                        confirmButtonColor: '#10b981',
+                        timer: 2000,
+                        showConfirmButton: true
+                    });
+                    
+                    closeTaskModal();
+                } catch (error) {
+                    console.error('Error saving changes:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'เกิดข้อผิดพลาด',
+                        text: 'ไม่สามารถบันทึกการเปลี่ยนแปลงได้: ' + (error.message || 'ข้อผิดพลาดไม่ทราบสาเหตุ'),
+                        confirmButtonColor: '#ef4444'
+                    });
+                }
+            }
+        }
+
+        // Management status tabs
+        function showManagementStatus(status) {
+            // Hide all status contents
+            const contents = document.querySelectorAll('.management-status-content');
+            contents.forEach(content => content.classList.add('hidden'));
+            
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.management-status-tab');
+            tabs.forEach(tab => {
+                tab.classList.remove('bg-white', 'text-gray-900', 'shadow-sm');
+                tab.classList.add('text-gray-600', 'hover:text-gray-900');
+            });
+            
+            // Show selected status content
+            document.getElementById(`status-${status}`).classList.remove('hidden');
+            
+            // Add active class to clicked tab
+            const activeTab = document.querySelector(`[data-status="${status}"]`);
+            activeTab.classList.remove('text-gray-600', 'hover:text-gray-900');
+            activeTab.classList.add('bg-white', 'text-gray-900', 'shadow-sm');
+            
+            updateManagementTasks();
+        }
+
+        // Update management tasks tables
+        function updateManagementTasks() {
+            console.log('Updating management tasks with Google Sheets data');
+            
+            const statusTables = {
+                'รอการอนุมัติ': 'pendingTasksTable',
+                'กำลังดำเนินการ': 'inProgressTasksTable',
+                'รอตรวจสอบ': 'reviewTasksTable',
+                'เสร็จสิ้น': 'completedTasksTable'
+            };
+
+            Object.keys(statusTables).forEach(status => {
+                const tableBody = document.getElementById(statusTables[status]);
+                const filteredTasks = tasks.filter(task => task['สถานะ'] === status);
+                
+                console.log(`Status ${status}: ${filteredTasks.length} tasks`);
+                
+                tableBody.innerHTML = '';
+                
+                filteredTasks.forEach(task => {
+                    const row = document.createElement('tr');
+                    row.className = 'hover:bg-gray-50 transition-colors';
+                    
+                    // Calculate days left from Google Sheets data
+                    const daysLeft = task['จำนวนวันที่เหลือ'] || 0;
+                    
+                    let daysLeftText = '';
+                    let daysLeftClass = '';
+                    if (task['สถานะ'] === 'เสร็จสิ้น') {
+                        daysLeftText = 'เสร็จสิ้น';
+                        daysLeftClass = 'text-green-600';
+                    } else if (daysLeft < 0) {
+                        daysLeftText = `ล่าช้า ${Math.abs(daysLeft)} วัน`;
+                        daysLeftClass = 'text-red-600';
+                    } else if (daysLeft <= 7) {
+                        daysLeftText = `${daysLeft} วัน`;
+                        daysLeftClass = 'text-orange-600';
+                    } else {
+                        daysLeftText = `${daysLeft} วัน`;
+                        daysLeftClass = 'text-green-600';
+                    }
+                    
+                    row.innerHTML = `
+                        <td class="px-3 py-2 text-sm text-gray-900">${task['ชื่องาน'] || ''}</td>
+                        <td class="px-3 py-2 text-sm text-gray-600">${task['รายละเอียด'] || ''}</td>
+                        <td class="px-3 py-2 text-sm text-gray-600">${formatDateToThai(task['วันเริ่มต้น']) || ''} / ${formatDateToThai(task['วันสิ้นสุด']) || ''}</td>
+                        <td class="px-3 py-2 text-sm ${daysLeftClass} font-medium">${daysLeftText}</td>
+                    `;
+                    
+                    tableBody.appendChild(row);
+                });
+            });
+        }
+
+        // New task form functionality
+        function toggleNewTaskForm() {
+            const form = document.getElementById('newTaskForm');
+            form.classList.toggle('hidden');
+        }
+
+        async function createTask() {
+            const title = document.getElementById('taskTitle').value;
+            const assignee = document.getElementById('taskAssignee').value;
+            const position = document.getElementById('taskPosition').value;
+            const description = document.getElementById('taskDescription').value;
+            const group = document.getElementById('taskGroup').value;
+            const priority = document.getElementById('taskPriority').value;
+            const status = document.getElementById('taskStatus').value;
+            const startDate = document.getElementById('taskStartDate').value;
+            const endDate = document.getElementById('taskEndDate').value;
+
+            // Validate required fields
+            if (!title || !assignee || !description || !group || !priority || !startDate || !endDate) {
+                await Swal.fire({
+                    icon: 'warning',
+                    title: '⚠️ ข้อมูลไม่ครบถ้วน',
+                    html: `
+                        <div class="text-left">
+                            <p class="mb-2">กรุณากรอกข้อมูลให้ครบถ้วน:</p>
+                            <ul class="list-disc list-inside text-sm text-gray-600">
+                                ${!title ? '<li>ชื่อเรื่อง</li>' : ''}
+                                ${!assignee ? '<li>ผู้รับผิดชอบ</li>' : ''}
+                                ${!description ? '<li>รายละเอียด</li>' : ''}
+                                ${!group ? '<li>กลุ่มงาน</li>' : ''}
+                                ${!priority ? '<li>ระดับความสำคัญ</li>' : ''}
+                                ${!startDate ? '<li>วันเริ่มต้น</li>' : ''}
+                                ${!endDate ? '<li>วันสิ้นสุด</li>' : ''}
+                            </ul>
+                        </div>
+                    `,
+                    confirmButtonText: 'ตกลง',
+                    confirmButtonColor: '#ec4899',
+                    customClass: {
+                        popup: 'rounded-xl',
+                        title: 'text-lg font-bold',
+                        confirmButton: 'rounded-lg px-6 py-2'
+                    }
+                });
+                return;
+            }
+
+            // Validate date range
+            const startDateObj = new Date(startDate);
+            const endDateObj = new Date(endDate);
+            
+            if (endDateObj <= startDateObj) {
+                await Swal.fire({
+                    icon: 'warning',
+                    title: '📅 วันที่ไม่ถูกต้อง',
+                    text: 'วันสิ้นสุดต้องมาหลังวันเริ่มต้น',
+                    confirmButtonText: 'ตกลง',
+                    confirmButtonColor: '#ec4899',
+                    customClass: {
+                        popup: 'rounded-xl',
+                        confirmButton: 'rounded-lg px-6 py-2'
+                    }
+                });
+                return;
+            }
+
+            let loadingSwal;
+
+            try {
+                // Show loading with progress steps
+                loadingSwal = Swal.fire({
+                    title: '🌸 กำลังสร้างงานใหม่',
+                    html: `
+                        <div class="text-center">
+                            <div class="mb-4">
+                                <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-pink-500"></div>
+                            </div>
+                            <p class="text-sm text-gray-600" id="loadingStep">กำลังเตรียมข้อมูล...</p>
+                            <div class="w-full bg-gray-200 rounded-full h-2 mt-4">
+                                <div class="bg-gradient-to-r from-pink-400 to-pink-500 h-2 rounded-full transition-all duration-500" id="progressBar" style="width: 10%"></div>
+                            </div>
+                        </div>
+                    `,
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    showConfirmButton: false,
+                    customClass: {
+                        popup: 'rounded-xl',
+                        title: 'text-lg font-bold text-pink-600'
+                    }
+                });
+
+                // Update progress: Preparing data
+                const updateProgress = (step, percentage, message) => {
+                    const stepElement = document.getElementById('loadingStep');
+                    const progressBar = document.getElementById('progressBar');
+                    if (stepElement) stepElement.textContent = message;
+                    if (progressBar) progressBar.style.width = percentage + '%';
+                };
+
+                updateProgress(1, 20, 'กำลังคำนวณข้อมูล...');
+
+                // Calculate days left
+                const today = new Date();
+                const end = new Date(endDate);
+                const daysLeft = Math.ceil((end - today) / (1000 * 60 * 60 * 24));
+
+                // Format dates to Thai format
+                const createDateThai = formatDateToThai(new Date());
+                const endDateThai = formatDateToThai(endDate);
+                const startDateThai = formatDateToThai(startDate);
+
+                const newTask = {
+                    id: Date.now(), // Use timestamp as unique ID
+                    name: title,
+                    status: status,
+                    priority: priority,
+                    createDate: createDateThai,
+                    endDate: endDateThai,
+                    startDate: startDateThai,
+                    daysLeft: daysLeft,
+                    assignee: assignee,
+                    position: position,
+                    description: description,
+                    group: group,
+                    files: []
+                };
+
+                updateProgress(2, 40, 'กำลังอัปโหลดไฟล์...');
+
+                // Upload files first if any
+                if (selectedFiles && selectedFiles.length > 0) {
+                    console.log('Uploading files...');
+                    const fileUrls = await uploadFiles(selectedFiles);
+                    newTask.files = fileUrls;
+                    updateProgress(3, 60, `อัปโหลดไฟล์สำเร็จ ${selectedFiles.length} ไฟล์`);
+                } else {
+                    updateProgress(3, 60, 'ไม่มีไฟล์ที่ต้องอัปโหลด');
+                }
+
+                updateProgress(4, 80, 'กำลังบันทึกลง Google Sheets...');
+
+                console.log('Saving task to sheet:', newTask);
+
+                // Save to Google Sheets
+                const result = await saveTaskToSheet(newTask);
+                
+                if (!result.success) {
+                    throw new Error(result.error || 'Failed to save task');
+                }
+
+                updateProgress(5, 95, 'กำลังอัปเดตข้อมูล...');
+
+                // Reload tasks from sheet to get updated data
+                await loadTasksFromSheet();
+                updateTaskTable();
+                updateManagementTasks();
+                
+                updateProgress(6, 100, 'เสร็จสิ้น!');
+
+                // Close loading dialog
+                if (loadingSwal) {
+                    Swal.close();
+                }
+
+                // Update dashboard data safely with delay
+                setTimeout(() => {
+                    try {
+                        updateDashboardData();
+                        populateStaffOptions();
+                        updateStaffPerformance();
+                    } catch (chartError) {
+                        console.error('Chart update error (non-critical):', chartError);
+                    }
+                }, 200);
+                
+                // Clear form
+                document.getElementById('taskTitle').value = '';
+                document.getElementById('taskAssignee').value = '';
+                document.getElementById('taskPosition').value = '';
+                document.getElementById('taskDescription').value = '';
+                document.getElementById('taskGroup').value = '';
+                document.getElementById('taskPriority').value = '';
+                document.getElementById('taskStatus').value = 'รอการอนุมัติ';
+                document.getElementById('taskStartDate').value = '';
+                document.getElementById('taskEndDate').value = '';
+                document.getElementById('taskFiles').value = '';
+                selectedFiles = [];
+                updateFileList();
+
+                // Show success message with animation
+                await Swal.fire({
+                    icon: 'success',
+                    title: '🎉 สร้างงานสำเร็จ!',
+                    html: `
+                        <div class="text-center">
+                            <div class="mb-4">
+                                <div class="text-6xl animate-bounce">✨</div>
+                            </div>
+                            <p class="text-lg font-medium text-gray-800 mb-2">งาน "${title}" ถูกสร้างเรียบร้อยแล้ว</p>
+                            <div class="bg-gradient-to-r from-green-50 to-green-100 p-4 rounded-lg border border-green-200">
+                                <div class="grid grid-cols-2 gap-4 text-sm">
+                                    <div class="text-left">
+                                        <p><strong>ผู้รับผิดชอบ:</strong> ${assignee}</p>
+                                        <p><strong>กลุ่มงาน:</strong> ${group}</p>
+                                    </div>
+                                    <div class="text-left">
+                                        <p><strong>ความสำคัญ:</strong> ${priority}</p>
+                                        <p><strong>สถานะ:</strong> ${status}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `,
+                    confirmButtonText: '🌸 ยอดเยี่ยม!',
+                    confirmButtonColor: '#10b981',
+                    timer: 5000,
+                    timerProgressBar: true,
+                    showConfirmButton: true,
+                    customClass: {
+                        popup: 'rounded-xl shadow-2xl',
+                        title: 'text-xl font-bold text-green-600',
+                        confirmButton: 'rounded-lg px-8 py-3 font-medium shadow-lg hover:shadow-xl transition-all duration-200',
+                        timerProgressBar: 'bg-gradient-to-r from-green-400 to-green-500'
+                    },
+                    backdrop: `
+                        rgba(0,0,0,0.4)
+                        url("data:image/svg+xml,%3csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3e%3cg fill='none' fill-rule='evenodd'%3e%3cg fill='%23ffffff' fill-opacity='0.1'%3e%3ccircle cx='30' cy='30' r='4'/%3e%3c/g%3e%3c/g%3e%3c/svg%3e")
+                        left top
+                        repeat
+                    `
+                });
+                
+                toggleNewTaskForm();
+
+            } catch (error) {
+                console.error('Error creating task:', error);
+                
+                // Close loading dialog if still open
+                if (loadingSwal) {
+                    Swal.close();
+                }
+                
+                // Show detailed error message
+                await Swal.fire({
+                    icon: 'error',
+                    title: '❌ เกิดข้อผิดพลาด',
+                    html: `
+                        <div class="text-center">
+                            <div class="mb-4">
+                                <div class="text-4xl">😞</div>
+                            </div>
+                            <p class="text-lg font-medium text-gray-800 mb-4">ไม่สามารถสร้างงานได้</p>
+                            <div class="bg-red-50 p-4 rounded-lg border border-red-200 text-left">
+                                <p class="text-sm text-red-700 mb-2"><strong>สาเหตุ:</strong></p>
+                                <p class="text-sm text-red-600 font-mono bg-red-100 p-2 rounded">${error.message}</p>
+                            </div>
+                            <div class="mt-4 text-sm text-gray-600">
+                                <p>💡 <strong>แนะนำ:</strong></p>
+                                <ul class="list-disc list-inside text-left mt-2">
+                                    <li>ตรวจสอบการเชื่อมต่ออินเทอร์เน็ต</li>
+                                    <li>ลองสร้างงานใหม่อีกครั้ง</li>
+                                    <li>หากยังไม่ได้ กรุณาติดต่อผู้ดูแลระบบ</li>
+                                </ul>
+                            </div>
+                        </div>
+                    `,
+                    confirmButtonText: '🔄 ลองใหม่',
+                    confirmButtonColor: '#ef4444',
+                    showCancelButton: true,
+                    cancelButtonText: '❌ ยกเลิก',
+                    cancelButtonColor: '#6b7280',
+                    customClass: {
+                        popup: 'rounded-xl shadow-2xl',
+                        title: 'text-xl font-bold text-red-600',
+                        confirmButton: 'rounded-lg px-6 py-2 font-medium',
+                        cancelButton: 'rounded-lg px-6 py-2 font-medium'
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // User wants to try again, do nothing (form stays open)
+                        console.log('User wants to try creating task again');
+                    }
+                });
+            }
+        }
+
+        // Upload files to Google Drive
+        async function uploadFiles(files) {
+            if (!files || files.length === 0) return [];
+            
+            const fileUrls = [];
+            
+            for (const file of files) {
+                try {
+                    const formData = new FormData();
+                    formData.append('action', 'uploadFile');
+                    formData.append('fileName', file.name);
+                    formData.append('fileData', file.data);
+                    formData.append('mimeType', file.type);
+                    formData.append('folderId', FOLDER_ID);
+                    
+                    const response = await fetch(APPS_SCRIPT_URL, {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    const text = await response.text();
+                    console.log('Upload file response:', text);
+                    
+                    let result;
+                    try {
+                        result = JSON.parse(text);
+                    } catch (parseError) {
+                        console.error('JSON parse error:', parseError);
+                        throw new Error('Invalid response format from server');
+                    }
+                    
+                    if (result.success) {
+                        fileUrls.push({
+                            name: file.originalName,
+                            url: result.fileUrl,
+                            id: result.fileId
+                        });
+                    } else {
+                        throw new Error(result.error || 'Failed to upload file');
+                    }
+                } catch (error) {
+                    console.error('Error uploading file:', file.name, error);
+                    throw error;
+                }
+            }
+            
+            return fileUrls;
+        }
+        
+        // Save task to Google Sheets
+        async function saveTaskToSheet(task) {
+            try {
+                console.log('Preparing to save task:', task);
+                
+                // Validate required fields
+                if (!task.name || !task.assignee || !task.description) {
+                    throw new Error('ข้อมูลไม่ครบถ้วน: ต้องมีชื่องาน ผู้รับผิดชอบ และรายละเอียด');
+                }
+                
+                if (!task.startDate || !task.endDate) {
+                    throw new Error('ข้อมูลไม่ครบถ้วน: ต้องระบุวันเริ่มต้นและวันสิ้นสุด');
+                }
+                
+                const payload = {
+                    action: 'saveTask',
+                    sheetId: SHEET_ID,
+                    taskData: JSON.stringify(task)
+                };
+                
+                console.log('Sending payload:', payload);
+                
+                const response = await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams(payload)
+                });
+                
+                console.log('Response status:', response.status);
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('HTTP error response:', errorText);
+                    throw new Error(`เกิดข้อผิดพลาดในการเชื่อมต่อ (${response.status}): ${errorText.substring(0, 100)}`);
+                }
+                
+                const text = await response.text();
+                console.log('Raw response:', text);
+                
+                let result;
+                try {
+                    result = JSON.parse(text);
+                } catch (parseError) {
+                    console.error('JSON parse error:', parseError);
+                    console.error('Response text:', text);
+                    throw new Error(`รูปแบบข้อมูลตอบกลับไม่ถูกต้อง: ${text.substring(0, 100)}...`);
+                }
+                
+                console.log('Parsed result:', result);
+                
+                if (!result.success) {
+                    const errorMsg = result.error || 'ไม่สามารถบันทึกข้อมูลได้';
+                    throw new Error(errorMsg);
+                }
+                
+                return result;
+            } catch (error) {
+                console.error('Error saving task to sheet:', error);
+                throw error;
+            }
+        }
+
+        // Load tasks from Google Sheets
+        async function loadTasksFromSheet() {
+            try {
+                console.log('Loading tasks from sheet...');
+                
+                const payload = {
+                    action: 'getTasks',
+                    sheetId: SHEET_ID
+                };
+                
+                const response = await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams(payload)
+                });
+                
+                console.log('Load tasks response status:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const text = await response.text();
+                console.log('Load tasks response:', text);
+                
+                let result;
+                try {
+                    result = JSON.parse(text);
+                } catch (parseError) {
+                    console.error('JSON parse error:', parseError);
+                    console.error('Response text:', text);
+                    throw new Error(`Invalid response format: ${text.substring(0, 100)}...`);
+                }
+                
+                console.log('Parsed load result:', result);
+                
+                if (result.success && result.tasks) {
+                    // Transform sheet data to task format - keep original field names for DataTables
+                    tasks = result.tasks.map((row, index) => {
+                        // Parse file URLs if they exist
+                        let files = [];
+                        if (row['ไฟล์แนบ'] && row['ไฟล์แนบ'].trim()) {
+                            const fileLines = row['ไฟล์แนบ'].split('\n');
+                            files = fileLines.map(line => {
+                                const parts = line.split(': ');
+                                return {
+                                    name: parts[0] || 'ไฟล์',
+                                    url: parts[1] || ''
+                                };
+                            }).filter(file => file.url);
+                        }
+
+                        // Calculate days left
+                        const today = new Date();
+                        const endDate = parseThaiDate(row['วันสิ้นสุด']);
+                        const daysLeft = endDate ? Math.ceil((endDate - today) / (1000 * 60 * 60 * 24)) : 0;
+
+                        // Return object with both original field names and English aliases
+                        return {
+                            // Original Thai field names for DataTables
+                            'ID': row['ID'] || index,
+                            'ชื่องาน': row['ชื่องาน'] || '',
+                            'สถานะ': row['สถานะ'] || 'รอการอนุมัติ',
+                            'ความสำคัญ': row['ความสำคัญ'] || 'ปานกลาง',
+                            'วันที่สร้าง': row['วันที่สร้าง'] || '',
+                            'วันสิ้นสุด': row['วันสิ้นสุด'] || '',
+                            'วันเริ่มต้น': row['วันเริ่มต้น'] || '',
+                            'จำนวนวันที่เหลือ': daysLeft,
+                            'ผู้รับผิดชอบ': row['ผู้รับผิดชอบ'] || '',
+                            'รายละเอียด': row['รายละเอียด'] || '',
+                            'กลุ่มงาน': row['กลุ่มงาน'] || '',
+                            'ไฟล์แนบ': row['ไฟล์แนบ'] || '',
+                            
+                            // English aliases for backward compatibility
+                            id: row['ID'] || index,
+                            name: row['ชื่องาน'] || '',
+                            status: row['สถานะ'] || 'รอการอนุมัติ',
+                            priority: row['ความสำคัญ'] || 'ปานกลาง',
+                            createDate: row['วันที่สร้าง'] || '',
+                            endDate: row['วันสิ้นสุด'] || '',
+                            startDate: row['วันเริ่มต้น'] || '',
+                            daysLeft: daysLeft,
+                            assignee: row['ผู้รับผิดชอบ'] || '',
+                            description: row['รายละเอียด'] || '',
+                            group: row['กลุ่มงาน'] || '',
+                            files: files
+                        };
+                    });
+                    
+                    console.log('Loaded tasks:', tasks.length);
+                    return tasks;
+                } else {
+                    console.warn('No tasks found or failed to load tasks:', result);
+                    tasks = [];
+                    return [];
+                }
+            } catch (error) {
+                console.error('Error loading tasks from sheet:', error);
+                tasks = [];
+                return [];
+            }
+        }
+
+        // Helper function to parse Thai date format
+        function parseThaiDate(dateStr) {
+            if (!dateStr) return null;
+            
+            // Handle different date formats
+            if (dateStr instanceof Date) {
+                return dateStr;
+            }
+            
+            // Try to parse various formats
+            const formats = [
+                /(\d{1,2})\/(\d{1,2})\/(\d{4})/,  // DD/MM/YYYY
+                /(\d{4})-(\d{1,2})-(\d{1,2})/     // YYYY-MM-DD
+            ];
+            
+            for (const format of formats) {
+                const match = dateStr.toString().match(format);
+                if (match) {
+                    if (format.source.includes('\/')) {
+                        // DD/MM/YYYY format
+                        const day = parseInt(match[1]);
+                        const month = parseInt(match[2]) - 1; // Month is 0-indexed
+                        const year = parseInt(match[3]);
+                        return new Date(year, month, day);
+                    } else {
+                        // YYYY-MM-DD format
+                        const year = parseInt(match[1]);
+                        const month = parseInt(match[2]) - 1;
+                        const day = parseInt(match[3]);
+                        return new Date(year, month, day);
+                    }
+                }
+            }
+            
+            // Try direct Date parsing as fallback
+            const parsed = new Date(dateStr);
+            return isNaN(parsed.getTime()) ? null : parsed;
+        }
+
+        // Helper function to format date to Thai format
+        function formatDateToThai(dateInput) {
+            if (!dateInput) return '';
+            
+            let date;
+            if (dateInput instanceof Date) {
+                date = dateInput;
+            } else if (typeof dateInput === 'string') {
+                // Handle YYYY-MM-DD format from HTML date input
+                if (dateInput.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                    date = new Date(dateInput);
+                } else {
+                    date = parseThaiDate(dateInput);
+                }
+            } else {
+                date = new Date(dateInput);
+            }
+            
+            if (!date || isNaN(date.getTime())) return '';
+            
+            const day = date.getDate().toString().padStart(2, '0');
+            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+            const year = date.getFullYear();
+            
+            return `${day}/${month}/${year}`;
+        }
+
+        // Update task status in Google Sheets
+        async function updateTaskStatusInSheet(taskId, newStatus) {
+            try {
+                const formData = new FormData();
+                formData.append('action', 'updateTaskStatus');
+                formData.append('sheetId', SHEET_ID);
+                formData.append('taskId', taskId);
+                formData.append('newStatus', newStatus);
+                
+                const response = await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const text = await response.text();
+                console.log('Update status response:', text);
+                
+                let result;
+                try {
+                    result = JSON.parse(text);
+                } catch (parseError) {
+                    console.error('JSON parse error:', parseError);
+                    throw new Error('Invalid response format from server');
+                }
+                
+                if (!result.success) {
+                    throw new Error(result.error || 'Failed to update task status');
+                }
+                
+                return result;
+            } catch (error) {
+                console.error('Error updating task status:', error);
+                throw error;
+            }
+        }
+
+        // Management tasks filter
+        function filterManagementTasks() {
+            const filter = document.getElementById('managementStatusFilter').value;
+            const managementTasks = document.querySelectorAll('.management-task');
+            
+            managementTasks.forEach(task => {
+                const status = task.getAttribute('data-status');
+                if (!filter || status === filter) {
+                    task.style.display = '';
+                } else {
+                    task.style.display = 'none';
+                }
+            });
+        }
+
+
+
+        // DataTable instance
+        let tasksDataTable;
+
+        // Initialize DataTable
+        function initDataTable() {
+            if (tasksDataTable) {
+                tasksDataTable.destroy();
+            }
+
+            tasksDataTable = $('#tasksDataTable').DataTable({
+                data: tasks,
+                columns: [
+                    { 
+                        data: 'ชื่องาน',
+                        title: 'ชื่องาน',
+                        className: 'px-4 py-3 text-sm text-gray-900'
+                    },
+                    { 
+                        data: 'วันที่สร้าง',
+                        title: 'วันที่สร้าง',
+                        className: 'px-4 py-3 text-sm text-gray-600',
+                        render: function(data, type, row) {
+                            return formatDateToThai(data) || '';
+                        }
+                    },
+                    { 
+                        data: 'วันสิ้นสุด',
+                        title: 'วันสิ้นสุด',
+                        className: 'px-4 py-3 text-sm text-gray-600',
+                        render: function(data, type, row) {
+                            return formatDateToThai(data) || '';
+                        }
+                    },
+                    { 
+                        data: null,
+                        title: 'จำนวนวันที่เหลือ',
+                        className: 'px-4 py-3 text-sm font-medium',
+                        render: function(data, type, row) {
+                            const daysLeft = row['จำนวนวันที่เหลือ'] || 0;
+                            let daysLeftText = '';
+                            let daysLeftClass = '';
+                            if (row['สถานะ'] === 'เสร็จสิ้น') {
+                                daysLeftText = 'เสร็จสิ้น';
+                                daysLeftClass = 'text-green-600';
+                            } else if (daysLeft < 0) {
+                                daysLeftText = `ล่าช้า ${Math.abs(daysLeft)} วัน`;
+                                daysLeftClass = 'text-red-600';
+                            } else if (daysLeft <= 7) {
+                                daysLeftText = `${daysLeft} วัน`;
+                                daysLeftClass = 'text-orange-600';
+                            } else {
+                                daysLeftText = `${daysLeft} วัน`;
+                                daysLeftClass = 'text-green-600';
+                            }
+                            return `<span class="${daysLeftClass}">${daysLeftText}</span>`;
+                        }
+                    },
+                    { 
+                        data: 'สถานะ',
+                        title: 'สถานะ',
+                        className: 'px-4 py-3',
+                        render: function(data, type, row) {
+                            const statusConfig = {
+                                'รอการอนุมัติ': { icon: '⏳', class: 'bg-yellow-100 text-yellow-800' },
+                                'กำลังดำเนินการ': { icon: '🔄', class: 'bg-blue-100 text-blue-800' },
+                                'รอตรวจสอบ': { icon: '🔍', class: 'bg-purple-100 text-purple-800' },
+                                'เสร็จสิ้น': { icon: '🔒', class: 'bg-gray-100 text-gray-800', text: 'ปิดงาน' }
+                            };
+                            
+                            const config = statusConfig[data] || { icon: '❓', class: 'bg-gray-100 text-gray-800' };
+                            const displayText = config.text || data;
+                            
+                            return `<span class="px-2 py-1 ${config.class} text-xs rounded-full">${config.icon} ${displayText}</span>`;
+                        }
+                    },
+                    { 
+                        data: 'ความสำคัญ',
+                        title: 'ความสำคัญ',
+                        className: 'px-4 py-3',
+                        render: function(data, type, row) {
+                            const priorityConfig = {
+                                'สูง': { icon: '💖', class: 'bg-pink-100 text-pink-800' },
+                                'ปานกลาง': { icon: '💛', class: 'bg-yellow-100 text-yellow-800' },
+                                'ต่ำ': { icon: '💚', class: 'bg-green-100 text-green-800' }
+                            };
+                            
+                            const config = priorityConfig[data] || { icon: '❓', class: 'bg-gray-100 text-gray-800' };
+                            
+                            return `<span class="px-3 py-1 ${config.class} text-xs rounded-full flex items-center">${config.icon} ${data}</span>`;
+                        }
+                    },
+                    { 
+                        data: null,
+                        title: 'การจัดการ',
+                        className: 'px-4 py-3',
+                        orderable: false,
+                        render: function(data, type, row) {
+                            return `<button onclick="openTaskModal('${row.id}')" class="text-blue-600 hover:text-blue-800 transition-colors text-xl hover:scale-110 transform duration-200">👁️</button>`;
+                        }
+                    }
+                ],
+                language: {
+                    "sProcessing": "กำลังดำเนินการ...",
+                    "sLengthMenu": "แสดง _MENU_ รายการ",
+                    "sZeroRecords": "ไม่พบข้อมูลที่ตรงกัน",
+                    "sInfo": "แสดง _START_ ถึง _END_ จาก _TOTAL_ รายการ",
+                    "sInfoEmpty": "แสดง 0 ถึง 0 จาก 0 รายการ",
+                    "sInfoFiltered": "(กรองข้อมูลจาก _MAX_ รายการทั้งหมด)",
+                    "sInfoPostFix": "",
+                    "sSearch": "ค้นหา:",
+                    "sUrl": "",
+                    "oPaginate": {
+                        "sFirst": "หน้าแรก",
+                        "sPrevious": "ก่อนหน้า",
+                        "sNext": "ถัดไป",
+                        "sLast": "หน้าสุดท้าย"
+                    }
+                },
+                pageLength: 10,
+                responsive: true,
+                order: [[1, 'desc']], // Sort by create date descending
+                dom: '<"flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4"<"mb-2 sm:mb-0"l><"mb-2 sm:mb-0"f>>rtip'
+            });
+        }
+
+        // Update task table
+        function updateTaskTable() {
+            if (tasksDataTable) {
+                tasksDataTable.clear().rows.add(tasks).draw();
+            } else {
+                initDataTable();
+            }
+        }
+
+
+
+        // Update dashboard data based on current tasks from Google Sheets
+        function updateDashboardData() {
+            try {
+                console.log('Updating dashboard with', tasks.length, 'tasks from Google Sheets');
+                
+                if (tasks.length === 0) {
+                    // Show empty state
+                    updateDashboardNumbers(0, 0, 0, 0, 0);
+                    updateDashboardCharts(0, 0, 0, 0, {});
+                    updateGroupCards({});
+                    return;
+                }
+                
+                // Calculate real statistics from Google Sheets data using correct field names
+                const completed = tasks.filter(t => t['สถานะ'] === 'เสร็จสิ้น').length;
+                const inProgress = tasks.filter(t => t['สถานะ'] === 'กำลังดำเนินการ').length;
+                const review = tasks.filter(t => t['สถานะ'] === 'รอตรวจสอบ').length;
+                const pending = tasks.filter(t => t['สถานะ'] === 'รอการอนุมัติ').length;
+                
+                console.log('Status counts:', { completed, inProgress, review, pending });
+                
+                // Calculate group statistics from real Google Sheets data
+                const groupStats = {};
+                const groups = ['กลุ่มงานทะเบียนและวัดผล', 'กลุ่มงานห้องสมุดและสารสนเทศ', 'กลุ่มงานวิจัยและคุณภาพการศึกษา', 'กลุ่มงานส่งเสริมพระพุทธศาสนาและบริการสังคม'];
+                
+                groups.forEach(group => {
+                    const groupTasks = tasks.filter(t => t['กลุ่มงาน'] === group);
+                    const groupCompleted = groupTasks.filter(t => t['สถานะ'] === 'เสร็จสิ้น').length;
+                    const groupInProgress = groupTasks.filter(t => t['สถานะ'] === 'กำลังดำเนินการ').length;
+                    const groupReview = groupTasks.filter(t => t['สถานะ'] === 'รอตรวจสอบ').length;
+                    const groupPending = groupTasks.filter(t => t['สถานะ'] === 'รอการอนุมัติ').length;
+                    
+                    groupStats[group] = {
+                        total: groupTasks.length,
+                        completed: groupCompleted,
+                        inProgress: groupInProgress,
+                        review: groupReview,
+                        pending: groupPending,
+                        successRate: groupTasks.length > 0 ? Math.round((groupCompleted / groupTasks.length) * 100) : 0
+                    };
+                    
+                    console.log(`Group ${group}:`, groupStats[group]);
+                });
+                
+                // Update dashboard numbers and charts with real Google Sheets data
+                updateDashboardNumbers(completed, inProgress, review, pending, tasks.length);
+                updateDashboardCharts(completed, inProgress, review, pending, groupStats);
+                updateGroupCards(groupStats);
+            } catch (error) {
+                console.error('Error updating dashboard data:', error);
+                // Don't throw error to prevent SweetAlert from showing chart errors
+            }
+        }
+
+        // Update dashboard numbers
+        function updateDashboardNumbers(completed, inProgress, review, pending, total) {
+            const successRate = total > 0 ? Math.round((completed / total) * 100) : 0;
+            
+            // Update KPI cards
+            const successCard = document.querySelector('.bg-gradient-to-r.from-pink-400');
+            if (successCard) {
+                const percentage = successCard.querySelector('.text-3xl');
+                const progressBar = successCard.querySelector('.bg-white');
+                if (percentage) percentage.textContent = successRate + '%';
+                if (progressBar) progressBar.style.width = successRate + '%';
+            }
+            
+            const totalCard = document.querySelector('.bg-gradient-to-r.from-purple-400');
+            if (totalCard) {
+                const totalNumber = totalCard.querySelector('.text-3xl');
+                if (totalNumber) totalNumber.textContent = total;
+            }
+            
+            const completedCard = document.querySelector('.bg-gradient-to-r.from-green-400');
+            if (completedCard) {
+                const completedNumber = completedCard.querySelector('.text-3xl');
+                if (completedNumber) completedNumber.textContent = completed;
+            }
+        }
+
+        // Update dashboard charts with real data
+        function updateDashboardCharts(completed, inProgress, review, pending, groupStats) {
+            try {
+                // Update status chart data
+                if (window.statusChart && window.statusChart.data && window.statusChart.data.datasets && window.statusChart.data.datasets[0]) {
+                    window.statusChart.data.datasets[0].data = [completed, inProgress, review, pending];
+                    window.statusChart.update();
+                }
+                
+                // Update group chart data
+                if (window.groupChart && window.groupChart.data && window.groupChart.data.datasets && window.groupChart.data.datasets[0]) {
+                    const groupNames = Object.keys(groupStats);
+                    const groupRates = groupNames.map(name => groupStats[name].successRate);
+                    
+                    window.groupChart.data.datasets[0].data = groupRates;
+                    window.groupChart.update();
+                }
+            } catch (error) {
+                console.error('Error updating dashboard charts:', error);
+                // Don't throw error to prevent SweetAlert from showing chart errors
+            }
+            
+            // Update status summary numbers
+            const statusSummary = [
+                { selector: '.bg-green-50', count: completed, percentage: ((completed / (completed + inProgress + review + pending)) * 100).toFixed(1) },
+                { selector: '.bg-blue-50', count: inProgress, percentage: ((inProgress / (completed + inProgress + review + pending)) * 100).toFixed(1) },
+                { selector: '.bg-purple-50', count: review, percentage: ((review / (completed + inProgress + review + pending)) * 100).toFixed(1) },
+                { selector: '.bg-yellow-50', count: pending, percentage: ((pending / (completed + inProgress + review + pending)) * 100).toFixed(1) }
+            ];
+            
+            statusSummary.forEach(item => {
+                const element = document.querySelector(item.selector);
+                if (element) {
+                    const countElement = element.querySelector('.text-lg.font-bold');
+                    const percentElement = element.querySelector('.text-xs');
+                    if (countElement) countElement.textContent = item.count;
+                    if (percentElement) percentElement.textContent = item.percentage + '%';
+                }
+            });
+        }
+
+        // Update group cards with real data from Google Sheets
+        function updateGroupCards(groupStats) {
+            const groupCards = document.querySelectorAll('.border-l-4');
+            const groupOrder = [
+                'กลุ่มงานทะเบียนและวัดผล',
+                'กลุ่มงานห้องสมุดและสารสนเทศ', 
+                'กลุ่มงานวิจัยและคุณภาพการศึกษา',
+                'กลุ่มงานส่งเสริมพระพุทธศาสนาและบริการสังคม'
+            ];
+            
+            groupCards.forEach((card, index) => {
+                if (index < groupOrder.length) {
+                    const groupName = groupOrder[index];
+                    
+                    // Use groupStats data or calculate from Google Sheets data
+                    let stats;
+                    if (groupStats[groupName]) {
+                        stats = groupStats[groupName];
+                    } else {
+                        // Calculate real data from Google Sheets for this group using correct field names
+                        const groupTasks = tasks.filter(t => t['กลุ่มงาน'] === groupName);
+                        stats = {
+                            total: groupTasks.length,
+                            completed: groupTasks.filter(t => t['สถานะ'] === 'เสร็จสิ้น').length,
+                            inProgress: groupTasks.filter(t => t['สถานะ'] === 'กำลังดำเนินการ').length,
+                            review: groupTasks.filter(t => t['สถานะ'] === 'รอตรวจสอบ').length,
+                            pending: groupTasks.filter(t => t['สถานะ'] === 'รอการอนุมัติ').length,
+                            successRate: groupTasks.length > 0 ? Math.round((groupTasks.filter(t => t['สถานะ'] === 'เสร็จสิ้น').length / groupTasks.length) * 100) : 0
+                        };
+                    }
+                    
+                    const totalSpan = card.querySelector('.flex.justify-between:nth-child(1) span:last-child');
+                    const completedSpan = card.querySelector('.flex.justify-between:nth-child(2) span:last-child');
+                    const inProgressSpan = card.querySelector('.flex.justify-between:nth-child(3) span:last-child');
+                    const reviewSpan = card.querySelector('.flex.justify-between:nth-child(4) span:last-child');
+                    const progressBar = card.querySelector('.bg-gradient-to-r');
+                    const successText = card.querySelector('.text-xs.text-gray-500');
+                    
+                    if (totalSpan) totalSpan.textContent = stats.total;
+                    if (completedSpan) completedSpan.textContent = stats.completed;
+                    if (inProgressSpan) inProgressSpan.textContent = stats.inProgress;
+                    if (reviewSpan) reviewSpan.textContent = stats.review;
+                    if (progressBar) progressBar.style.width = stats.successRate + '%';
+                    if (successText) successText.textContent = stats.successRate + '% สำเร็จ';
+                }
+            });
+        }
+
+        // Dashboard charts - Initialize with real data from Google Sheets
+        function initDashboardCharts() {
+            console.log('Initializing dashboard charts with Google Sheets data');
+            
+            if (tasks.length === 0) {
+                console.log('No tasks available for charts');
+                return;
+            }
+            
+            // Calculate real data from loaded tasks using correct field names
+            const completed = tasks.filter(t => t['สถานะ'] === 'เสร็จสิ้น').length;
+            const inProgress = tasks.filter(t => t['สถานะ'] === 'กำลังดำเนินการ').length;
+            const review = tasks.filter(t => t['สถานะ'] === 'รอตรวจสอบ').length;
+            const pending = tasks.filter(t => t['สถานะ'] === 'รอการอนุมัติ').length;
+            
+            console.log('Chart data:', { completed, inProgress, review, pending });
+            
+            // Calculate group success rates from real data - only completed tasks
+            const groups = ['กลุ่มงานทะเบียนและวัดผล', 'กลุ่มงานห้องสมุดและสารสนเทศ', 'กลุ่มงานวิจัยและคุณภาพการศึกษา', 'กลุ่มงานส่งเสริมพระพุทธศาสนาและบริการสังคม'];
+            const groupRates = groups.map(group => {
+                const groupTasks = tasks.filter(t => t['กลุ่มงาน'] === group);
+                const groupCompleted = groupTasks.filter(t => t['สถานะ'] === 'เสร็จสิ้น').length;
+                const rate = groupTasks.length > 0 ? Math.round((groupCompleted / groupTasks.length) * 100) : 0;
+                console.log(`Group ${group}: ${groupCompleted}/${groupTasks.length} = ${rate}%`);
+                return rate;
+            });
+
+            // Group performance chart
+            const groupCtx = document.getElementById('groupChart').getContext('2d');
+            window.groupChart = new Chart(groupCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['ทะเบียนและวัดผล', 'ห้องสมุดและสารสนเทศ', 'วิจัยและคุณภาพ', 'พระพุทธศาสนาและบริการสังคม'],
+                    datasets: [{
+                        label: 'ความสำเร็จ (%)',
+                        data: groupRates,
+                        backgroundColor: ['#3B82F6', '#10B981', '#8B5CF6', '#F59E0B'],
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'top',
+                            color: '#374151',
+                            font: {
+                                weight: 'bold',
+                                size: 12
+                            },
+                            formatter: function(value) {
+                                return value + '%';
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    },
+                    onHover: (event, activeElements) => {
+                        event.native.target.style.cursor = activeElements.length > 0 ? 'pointer' : 'default';
+                    }
+                },
+                plugins: [{
+                    afterDatasetsDraw: function(chart) {
+                        const ctx = chart.ctx;
+                        chart.data.datasets.forEach((dataset, i) => {
+                            const meta = chart.getDatasetMeta(i);
+                            meta.data.forEach((bar, index) => {
+                                const data = dataset.data[index];
+                                ctx.fillStyle = '#374151';
+                                ctx.font = 'bold 12px Sarabun';
+                                ctx.textAlign = 'center';
+                                ctx.textBaseline = 'bottom';
+                                ctx.fillText(data + '%', bar.x, bar.y - 5);
+                            });
+                        });
+                    }
+                }]
+            });
+
+            // Status overview chart
+            const statusCtx = document.getElementById('statusChart').getContext('2d');
+            window.statusChart = new Chart(statusCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['เสร็จสิ้น', 'กำลังดำเนินการ', 'รอตรวจสอบ', 'รอการอนุมัติ'],
+                    datasets: [{
+                        data: [completed, inProgress, review, pending],
+                        backgroundColor: ['#10B981', '#3B82F6', '#8B5CF6', '#F59E0B'],
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = ((context.parsed * 100) / total).toFixed(1);
+                                    return context.label + ': ' + context.parsed + ' (' + percentage + '%)';
+                                }
+                            }
+                        }
+                    },
+                    cutout: '60%'
+                },
+                plugins: [{
+                    afterDatasetsDraw: function(chart) {
+                        const ctx = chart.ctx;
+                        const total = chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                        
+                        // Draw center text
+                        ctx.save();
+                        ctx.font = 'bold 24px Sarabun';
+                        ctx.fillStyle = '#374151';
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        
+                        const centerX = (chart.chartArea.left + chart.chartArea.right) / 2;
+                        const centerY = (chart.chartArea.top + chart.chartArea.bottom) / 2;
+                        
+                        ctx.fillText(total, centerX, centerY - 10);
+                        
+                        ctx.font = '14px Sarabun';
+                        ctx.fillStyle = '#6B7280';
+                        ctx.fillText('งานทั้งหมด', centerX, centerY + 15);
+                        ctx.restore();
+                    }
+                }]
+            });
+        }
+
+        // Summary charts
+        let groupPieChart, staffChart;
+
+        function initSummaryCharts() {
+            populateStaffOptions();
+            updateGroupSummary();
+            updateStaffPerformance();
+        }
+
+        // Populate staff options from real data
+        function populateStaffOptions() {
+            console.log('Populating staff options from Google Sheets data');
+            const staffSelect = document.getElementById('staffSelect');
+            const availableAssignees = [...new Set(tasks.map(t => t['ผู้รับผิดชอบ']).filter(a => a && a.trim()))];
+            
+            console.log('Available assignees:', availableAssignees);
+            
+            staffSelect.innerHTML = '';
+            
+            if (availableAssignees.length === 0) {
+                staffSelect.innerHTML = '<option value="">ไม่มีข้อมูลเจ้าหน้าที่</option>';
+                return;
+            }
+            
+            availableAssignees.forEach((assignee, index) => {
+                const option = document.createElement('option');
+                option.value = assignee;
+                option.textContent = `👤 ${assignee}`;
+                if (index === 0) option.selected = true;
+                staffSelect.appendChild(option);
+            });
+        }
+
+        function updateGroupSummary() {
+            console.log('Updating group summary with Google Sheets data');
+            const groupSelect = document.getElementById('groupSelect');
+            const selectedGroup = groupSelect.value;
+            
+            // Map group select values to actual group names
+            const groupMapping = {
+                'registry': 'กลุ่มงานทะเบียนและวัดผล',
+                'library': 'กลุ่มงานห้องสมุดและสารสนเทศ',
+                'research': 'กลุ่มงานวิจัยและคุณภาพการศึกษา',
+                'buddhism': 'กลุ่มงานส่งเสริมพระพุทธศาสนาและบริการสังคม'
+            };
+            
+            const actualGroupName = groupMapping[selectedGroup];
+            const groupTasks = tasks.filter(t => t['กลุ่มงาน'] === actualGroupName);
+            
+            console.log(`Group ${actualGroupName}: ${groupTasks.length} tasks`);
+            
+            // Calculate real data from Google Sheets tasks
+            const completed = groupTasks.filter(t => t['สถานะ'] === 'เสร็จสิ้น').length;
+            const inProgress = groupTasks.filter(t => t['สถานะ'] === 'กำลังดำเนินการ').length;
+            const review = groupTasks.filter(t => t['สถานะ'] === 'รอตรวจสอบ').length;
+            const pending = groupTasks.filter(t => t['สถานะ'] === 'รอการอนุมัติ').length;
+            const delayed = groupTasks.filter(t => (t['จำนวนวันที่เหลือ'] || 0) < 0 && t['สถานะ'] !== 'เสร็จสิ้น').length;
+            
+            const data = {
+                completed: completed,
+                inProgress: inProgress,
+                review: review,
+                pending: pending,
+                delayed: delayed,
+                tasks: groupTasks.slice(0, 10).map(task => ({
+                    name: task['ชื่องาน'] || '',
+                    responsible: task['ผู้รับผิดชอบ'] || '',
+                    status: task['สถานะ'] || '',
+                    progress: task['สถานะ'] === 'เสร็จสิ้น' ? 100 : 
+                             task['สถานะ'] === 'รอตรวจสอบ' ? 80 :
+                             task['สถานะ'] === 'กำลังดำเนินการ' ? 60 : 30
+                }))
+            };
+
+            // Update pie chart with real data from Google Sheets
+            const ctx = document.getElementById('groupPieChart').getContext('2d');
+            if (groupPieChart) {
+                groupPieChart.destroy();
+            }
+            
+            // Create chart with all status categories
+            const chartData = [];
+            const chartLabels = [];
+            const chartColors = [];
+            
+            if (data.completed > 0) {
+                chartData.push(data.completed);
+                chartLabels.push('เสร็จสิ้น');
+                chartColors.push('#10B981');
+            }
+            if (data.inProgress > 0) {
+                chartData.push(data.inProgress);
+                chartLabels.push('กำลังดำเนินการ');
+                chartColors.push('#3B82F6');
+            }
+            if (data.review > 0) {
+                chartData.push(data.review);
+                chartLabels.push('รอตรวจสอบ');
+                chartColors.push('#8B5CF6');
+            }
+            if (data.pending > 0) {
+                chartData.push(data.pending);
+                chartLabels.push('รอการอนุมัติ');
+                chartColors.push('#F59E0B');
+            }
+            if (data.delayed > 0) {
+                chartData.push(data.delayed);
+                chartLabels.push('ล่าช้า');
+                chartColors.push('#EF4444');
+            }
+            
+            // Show empty state if no data
+            if (chartData.length === 0) {
+                chartData.push(1);
+                chartLabels.push('ไม่มีข้อมูล');
+                chartColors.push('#E5E7EB');
+            }
+            
+            groupPieChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: chartLabels,
+                    datasets: [{
+                        data: chartData,
+                        backgroundColor: chartColors,
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = total > 0 ? ((context.parsed * 100) / total).toFixed(1) : 0;
+                                    return context.label + ': ' + context.parsed + ' (' + percentage + '%)';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Update table
+            const tableBody = document.getElementById('groupTaskTable');
+            tableBody.innerHTML = '';
+            
+            data.tasks.forEach(task => {
+                const row = document.createElement('tr');
+                const statusColor = task.status === 'เสร็จสิ้น' ? 'green' : task.status === 'กำลังดำเนินการ' ? 'blue' : 'red';
+                
+                row.innerHTML = `
+                    <td class="px-3 py-2 text-sm text-gray-900">${task.name}</td>
+                    <td class="px-3 py-2 text-sm text-gray-600">${task.responsible}</td>
+                    <td class="px-3 py-2">
+                        <span class="px-2 py-1 bg-${statusColor}-100 text-${statusColor}-800 text-xs rounded-full">${task.status}</span>
+                    </td>
+                    <td class="px-3 py-2">
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-${statusColor}-500 h-2 rounded-full" style="width: ${task.progress}%"></div>
+                        </div>
+                        <span class="text-xs text-gray-600">${task.progress}%</span>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        function updateStaffPerformance() {
+            console.log('Updating staff performance with Google Sheets data');
+            const staffSelect = document.getElementById('staffSelect');
+            const selectedStaff = staffSelect.value;
+            
+            if (!selectedStaff || selectedStaff === '') {
+                // Show empty state
+                resetStaffCards();
+                if (staffChart) {
+                    staffChart.destroy();
+                    staffChart = null;
+                }
+                return;
+            }
+            
+            // Calculate real data from Google Sheets tasks for selected staff
+            const staffTasks = tasks.filter(t => t['ผู้รับผิดชอบ'] === selectedStaff);
+            const completed = staffTasks.filter(t => t['สถานะ'] === 'เสร็จสิ้น').length;
+            const inProgress = staffTasks.filter(t => t['สถานะ'] === 'กำลังดำเนินการ').length;
+            const review = staffTasks.filter(t => t['สถานะ'] === 'รอตรวจสอบ').length;
+            const pending = staffTasks.filter(t => t['สถานะ'] === 'รอการอนุมัติ').length;
+            
+            console.log(`Staff ${selectedStaff}: ${staffTasks.length} tasks`, { completed, inProgress, review, pending });
+            
+            const data = {
+                total: staffTasks.length,
+                completed: completed,
+                inProgress: inProgress,
+                review: review,
+                pending: pending
+            };
+
+            // Update status cards with real data and percentages
+            updateStaffCards(data);
+
+            // Update chart with real data from Google Sheets
+            const ctx = document.getElementById('staffPerformanceChart').getContext('2d');
+            if (staffChart) {
+                staffChart.destroy();
+            }
+            
+            staffChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['รอการอนุมัติ', 'กำลังดำเนินการ', 'รอตรวจสอบ', 'เสร็จสิ้น'],
+                    datasets: [{
+                        label: 'จำนวนงาน',
+                        data: [data.pending, data.inProgress, data.review, data.completed],
+                        backgroundColor: ['#F59E0B', '#3B82F6', '#8B5CF6', '#10B981'],
+                        borderRadius: 8,
+                        borderWidth: 2,
+                        borderColor: ['#D97706', '#2563EB', '#7C3AED', '#059669']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleColor: '#fff',
+                            bodyColor: '#fff',
+                            borderColor: '#374151',
+                            borderWidth: 1,
+                            callbacks: {
+                                label: function(context) {
+                                    const total = data.total;
+                                    const percentage = total > 0 ? ((context.parsed.y * 100) / total).toFixed(1) : 0;
+                                    return context.label + ': ' + context.parsed.y + ' งาน (' + percentage + '%)';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1,
+                                color: '#6B7280',
+                                font: {
+                                    family: 'Sarabun',
+                                    size: 12
+                                }
+                            },
+                            grid: {
+                                color: '#E5E7EB',
+                                drawBorder: false
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: '#6B7280',
+                                font: {
+                                    family: 'Sarabun',
+                                    size: 12,
+                                    weight: 'bold'
+                                }
+                            },
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    animation: {
+                        duration: 1000,
+                        easing: 'easeInOutQuart'
+                    }
+                },
+                plugins: [{
+                    afterDatasetsDraw: function(chart) {
+                        const ctx = chart.ctx;
+                        chart.data.datasets.forEach((dataset, i) => {
+                            const meta = chart.getDatasetMeta(i);
+                            meta.data.forEach((bar, index) => {
+                                const dataValue = dataset.data[index];
+                                if (dataValue > 0) {
+                                    const total = data.total;
+                                    const percentage = total > 0 ? ((dataValue * 100) / total).toFixed(1) : 0;
+                                    
+                                    // Draw count
+                                    ctx.fillStyle = '#374151';
+                                    ctx.font = 'bold 14px Sarabun';
+                                    ctx.textAlign = 'center';
+                                    ctx.textBaseline = 'bottom';
+                                    ctx.fillText(dataValue, bar.x, bar.y - 25);
+                                    
+                                    // Draw percentage
+                                    ctx.fillStyle = '#6B7280';
+                                    ctx.font = 'bold 12px Sarabun';
+                                    ctx.fillText(percentage + '%', bar.x, bar.y - 10);
+                                }
+                            });
+                        });
+                    }
+                }]
+            });
+        }
+
+        // Helper function to update staff cards
+        function updateStaffCards(data) {
+            const total = data.total;
+            
+            // Update pending card
+            document.getElementById('staffPendingTasks').textContent = data.pending;
+            const pendingPercent = total > 0 ? ((data.pending * 100) / total).toFixed(1) : 0;
+            document.getElementById('staffPendingPercent').textContent = pendingPercent + '%';
+            updateCircularProgress('staffPendingCircle', pendingPercent);
+            
+            // Update in progress card
+            document.getElementById('staffInProgressTasks').textContent = data.inProgress;
+            const inProgressPercent = total > 0 ? ((data.inProgress * 100) / total).toFixed(1) : 0;
+            document.getElementById('staffInProgressPercent').textContent = inProgressPercent + '%';
+            updateCircularProgress('staffInProgressCircle', inProgressPercent);
+            
+            // Update review card
+            document.getElementById('staffReviewTasks').textContent = data.review;
+            const reviewPercent = total > 0 ? ((data.review * 100) / total).toFixed(1) : 0;
+            document.getElementById('staffReviewPercent').textContent = reviewPercent + '%';
+            updateCircularProgress('staffReviewCircle', reviewPercent);
+            
+            // Update completed card
+            document.getElementById('staffCompletedTasks').textContent = data.completed;
+            const completedPercent = total > 0 ? ((data.completed * 100) / total).toFixed(1) : 0;
+            document.getElementById('staffCompletedPercent').textContent = completedPercent + '%';
+            updateCircularProgress('staffCompletedCircle', completedPercent);
+        }
+
+        // Helper function to reset staff cards
+        function resetStaffCards() {
+            const cardIds = ['staffPendingTasks', 'staffInProgressTasks', 'staffReviewTasks', 'staffCompletedTasks'];
+            const percentIds = ['staffPendingPercent', 'staffInProgressPercent', 'staffReviewPercent', 'staffCompletedPercent'];
+            const circleIds = ['staffPendingCircle', 'staffInProgressCircle', 'staffReviewCircle', 'staffCompletedCircle'];
+            
+            cardIds.forEach(id => {
+                document.getElementById(id).textContent = '0';
+            });
+            
+            percentIds.forEach(id => {
+                document.getElementById(id).textContent = '0%';
+            });
+            
+            circleIds.forEach(id => {
+                updateCircularProgress(id, 0);
+            });
+        }
+
+        // Helper function to update circular progress
+        function updateCircularProgress(elementId, percentage) {
+            const circle = document.getElementById(elementId);
+            if (circle) {
+                const circumference = 2 * Math.PI * 15.9155;
+                const strokeDasharray = (percentage / 100) * circumference;
+                circle.style.strokeDasharray = `${strokeDasharray}, ${circumference}`;
+            }
+        }
+
+
+
+
+
+
+
+        // Simple refresh function
+        async function manualRefresh() {
+            try {
+                console.log('Starting manual refresh...');
+                
+                // Show loading state
+                const refreshButton = document.querySelector('button[onclick="manualRefresh()"]');
+                if (refreshButton) {
+                    refreshButton.disabled = true;
+                    refreshButton.innerHTML = '⏳ กำลังรีเฟรช...';
+                }
+                
+                // Reload tasks from Google Sheets
+                await loadTasksFromSheet();
+                
+                // Update all components
+                updateTaskTable();
+                updateManagementTasks();
+                
+                // Update dashboard and staff data safely with delay
+                setTimeout(() => {
+                    try {
+                        updateDashboardData();
+                        populateStaffOptions();
+                        updateStaffPerformance();
+                    } catch (chartError) {
+                        console.error('Chart update error (non-critical):', chartError);
+                    }
+                }, 200);
+                
+                // Show success message
+                Swal.fire({
+                    icon: 'success',
+                    title: 'รีเฟรชสำเร็จ!',
+                    text: 'ข้อมูลได้รับการอัปเดตแล้ว',
+                    timer: 2000,
+                    showConfirmButton: false,
+                    toast: true,
+                    position: 'top-end'
+                });
+                
+                console.log('Manual refresh completed successfully');
+                
+            } catch (error) {
+                console.error('Error during manual refresh:', error);
+                
+                // Show error message
+                Swal.fire({
+                    icon: 'error',
+                    title: 'เกิดข้อผิดพลาด',
+                    text: 'ไม่สามารถรีเฟรชข้อมูลได้: ' + error.message,
+                    confirmButtonColor: '#ef4444'
+                });
+            } finally {
+                // Reset button state
+                const refreshButton = document.querySelector('button[onclick="manualRefresh()"]');
+                if (refreshButton) {
+                    refreshButton.disabled = false;
+                    refreshButton.innerHTML = '🔄 รีเฟรชข้อมูล';
+                }
+            }
+        }
+
+        // Test connection to Google Apps Script
+        async function testConnection() {
+            try {
+                console.log('Testing connection to:', APPS_SCRIPT_URL);
+                
+                const payload = {
+                    action: 'testConnection'
+                };
+                
+                const response = await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams(payload)
+                });
+                
+                console.log('Test connection response status:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const text = await response.text();
+                console.log('Test connection response:', text);
+                
+                let result;
+                try {
+                    result = JSON.parse(text);
+                } catch (parseError) {
+                    console.error('JSON parse error in test connection:', parseError);
+                    console.error('Response text:', text);
+                    return false;
+                }
+                
+                console.log('Test connection result:', result);
+                return result.success === true;
+            } catch (error) {
+                console.error('Connection test failed:', error);
+                return false;
+            }
+        }
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', async function() {
+            const firstTabBtn = document.querySelector('.tab-btn');
+            firstTabBtn.classList.remove('border-transparent', 'text-gray-700');
+            firstTabBtn.classList.add('border-orange-500', 'text-orange-600');
+            
+            try {
+                console.log('🚀 เริ่มต้นระบบติดตามแผนงาน...');
+                
+                // Load initial data from Google Sheets
+                await loadTasksFromSheet();
+                
+                // Initialize UI components
+                initDataTable();
+                updateManagementTasks();
+                
+                // Initialize dashboard data safely with delay
+                setTimeout(() => {
+                    updateDashboardData();
+                    populateStaffOptions();
+                }, 200);
+                
+                console.log('🎉 ระบบเริ่มต้นเสร็จสมบูรณ์');
+                
+            } catch (error) {
+                console.error('❌ เกิดข้อผิดพลาดในการเริ่มต้นระบบ:', error);
+                
+                // Initialize empty state
+                tasks = [];
+                initDataTable();
+                updateManagementTasks();
+                updateDashboardData();
+                populateStaffOptions();
+                
+                // Show error message
+                Swal.fire({
+                    icon: 'error',
+                    title: 'เกิดข้อผิดพลาด',
+                    text: 'ไม่สามารถโหลดข้อมูลเริ่มต้นได้: ' + error.message,
+                    confirmButtonColor: '#ef4444'
+                });
+            }
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96f8c4e9c7e77b6e',t:'MTc1NTI2MTcxOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
