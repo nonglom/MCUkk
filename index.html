@@ -154,15 +154,15 @@
     <!-- Navigation Tabs -->
     <nav class="bg-white shadow-md overflow-x-auto">
         <div class="container mx-auto px-4 sm:px-6">
-            <div class="flex space-x-4 sm:space-x-8 min-w-max sm:min-w-0">
-                <button onclick="showTab('assignment')" class="tab-btn py-3 sm:py-4 px-4 sm:px-6 text-gray-700 border-b-2 border-transparent hover:border-pink-400 hover:text-pink-600 transition-colors font-medium active whitespace-nowrap text-sm sm:text-base">
-                    📋 <span class="hidden sm:inline">มอบหมายงาน</span><span class="sm:hidden">งาน</span>
+            <div class="flex space-x-2 sm:space-x-8 min-w-max sm:min-w-0">
+                <button onclick="showTab('assignment')" class="tab-btn py-3 sm:py-4 px-3 sm:px-6 text-gray-700 border-b-2 border-transparent hover:border-pink-400 hover:text-pink-600 transition-colors font-medium active whitespace-nowrap text-sm sm:text-base">
+                    📋 มอบหมายงาน
                 </button>
-                <button onclick="showTab('dashboard')" class="tab-btn py-3 sm:py-4 px-4 sm:px-6 text-gray-700 border-b-2 border-transparent hover:border-pink-400 hover:text-pink-600 transition-colors font-medium whitespace-nowrap text-sm sm:text-base">
-                    📊 <span class="hidden sm:inline">Dashboard</span><span class="sm:hidden">แดช</span>
+                <button onclick="showTab('dashboard')" class="tab-btn py-3 sm:py-4 px-3 sm:px-6 text-gray-700 border-b-2 border-transparent hover:border-pink-400 hover:text-pink-600 transition-colors font-medium whitespace-nowrap text-sm sm:text-base">
+                    📊 Dashboard
                 </button>
-                <button onclick="showTab('summary')" class="tab-btn py-3 sm:py-4 px-4 sm:px-6 text-gray-700 border-b-2 border-transparent hover:border-pink-400 hover:text-pink-600 transition-colors font-medium whitespace-nowrap text-sm sm:text-base">
-                    📈 <span class="hidden sm:inline">สรุปงาน</span><span class="sm:hidden">สรุป</span>
+                <button onclick="showTab('summary')" class="tab-btn py-3 sm:py-4 px-3 sm:px-6 text-gray-700 border-b-2 border-transparent hover:border-pink-400 hover:text-pink-600 transition-colors font-medium whitespace-nowrap text-sm sm:text-base">
+                    📈 สรุปงาน
                 </button>
             </div>
         </div>
@@ -172,7 +172,7 @@
     <main class="container mx-auto px-4 sm:px-6 py-4 sm:py-8">
         <!-- Assignment Tab -->
         <div id="assignment" class="tab-content active">
-            <!-- Create New Task Section -->
+            <!-- 1. Button สร้างงานใหม่ -->
             <div class="mb-6 sm:mb-8">
                 <div class="bg-white rounded-xl card-shadow hover-lift p-4 sm:p-6">
                     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 sm:mb-6 space-y-3 sm:space-y-0">
@@ -185,105 +185,105 @@
                         </button>
                     </div>
 
-                        <!-- New Task Form -->
-                        <div id="newTaskForm" class="hidden space-y-4">
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">ชื่อเรื่อง</label>
-                                    <input type="text" id="taskTitle" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-400 focus:border-pink-400 transition-colors" placeholder="หัวข้อหลักของงาน">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">ผู้รับผิดชอบ</label>
-                                    <select id="taskAssignee" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-400 focus:border-pink-400 transition-colors">
-                                        <option value="">เลือกผู้รับผิดชอบ</option>
-                                        <option value="นางฤดี แสงเดือนฉาย">นางฤดี แสงเดือนฉาย</option>
-                                        <option value="นายนิรันดร เลิศวีรพล">นายนิรันดร เลิศวีรพล</option>
-                                        <option value="นางรพีพร มณีวรรณ">นางรพีพร มณีวรรณ</option>
-                                    </select>
-                                </div>
-                            </div>
-
+                    <!-- New Task Form -->
+                    <div id="newTaskForm" class="hidden space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">ตำแหน่ง</label>
-                                <select id="taskPosition" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-400 focus:border-pink-400 transition-colors">
-                                    <option value="">เลือกตำแหน่ง</option>
-                                    <option value="นักวิชาการศึกษา ชำนาญการ">นักวิชาการศึกษา ชำนาญการ</option>
-                                    <option value="นักวิชาการคอมพิวเตอร์ ชำนาญการ">นักวิชาการคอมพิวเตอร์ ชำนาญการ</option>
-                                    <option value="นักจัดการงานทั่วไป ชำนาญการ">นักจัดการงานทั่วไป ชำนาญการ</option>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">ชื่อเรื่อง</label>
+                                <input type="text" id="taskTitle" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-400 focus:border-pink-400 transition-colors" placeholder="หัวข้อหลักของงาน">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">ผู้รับผิดชอบ</label>
+                                <select id="taskAssignee" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-400 focus:border-pink-400 transition-colors">
+                                    <option value="">เลือกผู้รับผิดชอบ</option>
+                                    <option value="นางฤดี แสงเดือนฉาย">นางฤดี แสงเดือนฉาย</option>
+                                    <option value="นายนิรันดร เลิศวีรพล">นายนิรันดร เลิศวีรพล</option>
+                                    <option value="นางรพีพร มณีวรรณ">นางรพีพร มณีวรรณ</option>
                                 </select>
                             </div>
+                        </div>
 
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">ตำแหน่ง</label>
+                            <select id="taskPosition" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-400 focus:border-pink-400 transition-colors">
+                                <option value="">เลือกตำแหน่ง</option>
+                                <option value="นักวิชาการศึกษา ชำนาญการ">นักวิชาการศึกษา ชำนาญการ</option>
+                                <option value="นักวิชาการคอมพิวเตอร์ ชำนาญการ">นักวิชาการคอมพิวเตอร์ ชำนาญการ</option>
+                                <option value="นักจัดการงานทั่วไป ชำนาญการ">นักจัดการงานทั่วไป ชำนาญการ</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">รายละเอียด</label>
+                            <textarea id="taskDescription" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-400 focus:border-pink-400 transition-colors" placeholder="คำอธิบายงานและสิ่งที่ต้องดำเนินการ"></textarea>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">รายละเอียด</label>
-                                <textarea id="taskDescription" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-400 focus:border-pink-400 transition-colors" placeholder="คำอธิบายงานและสิ่งที่ต้องดำเนินการ"></textarea>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">กลุ่มงาน</label>
+                                <select id="taskGroup" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-400 focus:border-pink-400 transition-colors">
+                                    <option value="">เลือกกลุ่มงาน</option>
+                                    <option value="กลุ่มงานทะเบียนและวัดผล">กลุ่มงานทะเบียนและวัดผล</option>
+                                    <option value="กลุ่มงานห้องสมุดและสารสนเทศ">กลุ่มงานห้องสมุดและสารสนเทศ</option>
+                                    <option value="กลุ่มงานวิจัยและคุณภาพการศึกษา">กลุ่มงานวิจัยและคุณภาพการศึกษา</option>
+                                    <option value="กลุ่มงานส่งเสริมพระพุทธศาสนาและบริการสังคม">กลุ่มงานส่งเสริมพระพุทธศาสนาและบริการสังคม</option>
+                                </select>
                             </div>
-
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">กลุ่มงาน</label>
-                                    <select id="taskGroup" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-400 focus:border-pink-400 transition-colors">
-                                        <option value="">เลือกกลุ่มงาน</option>
-                                        <option value="กลุ่มงานทะเบียนและวัดผล">กลุ่มงานทะเบียนและวัดผล</option>
-                                        <option value="กลุ่มงานห้องสมุดและสารสนเทศ">กลุ่มงานห้องสมุดและสารสนเทศ</option>
-                                        <option value="กลุ่มงานวิจัยและคุณภาพการศึกษา">กลุ่มงานวิจัยและคุณภาพการศึกษา</option>
-                                        <option value="กลุ่มงานส่งเสริมพระพุทธศาสนาและบริการสังคม">กลุ่มงานส่งเสริมพระพุทธศาสนาและบริการสังคม</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">ระดับความสำคัญ</label>
-                                    <select id="taskPriority" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-400 focus:border-pink-400 transition-colors">
-                                        <option value="">เลือกระดับความสำคัญ</option>
-                                        <option value="สูง">💖 สูง</option>
-                                        <option value="ปานกลาง">💛 ปานกลาง</option>
-                                        <option value="ต่ำ">💚 ต่ำ</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">สถานะ</label>
-                                    <select id="taskStatus" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-400 focus:border-pink-400 transition-colors">
-                                        <option value="รอการอนุมัติ">รอการอนุมัติ</option>
-                                        <option value="กำลังดำเนินการ">กำลังดำเนินการ</option>
-                                        <option value="รอตรวจสอบ">รอตรวจสอบ</option>
-                                        <option value="เสร็จสิ้น">เสร็จสิ้น</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">วันเริ่มต้น</label>
-                                    <input type="date" id="taskStartDate" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-400 focus:border-pink-400 transition-colors">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">วันสิ้นสุด</label>
-                                    <input type="date" id="taskEndDate" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-400 focus:border-pink-400 transition-colors">
-                                </div>
-                            </div>
-
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">แนบไฟล์</label>
-                                <input type="file" id="taskFiles" multiple class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-400 focus:border-pink-400 transition-colors" onchange="handleFileSelect(event)">
-                                <div id="fileList" class="mt-2 space-y-2"></div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">ระดับความสำคัญ</label>
+                                <select id="taskPriority" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-400 focus:border-pink-400 transition-colors">
+                                    <option value="">เลือกระดับความสำคัญ</option>
+                                    <option value="สูง">💖 สูง</option>
+                                    <option value="ปานกลาง">💛 ปานกลาง</option>
+                                    <option value="ต่ำ">💚 ต่ำ</option>
+                                </select>
                             </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">สถานะ</label>
+                                <select id="taskStatus" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-400 focus:border-pink-400 transition-colors">
+                                    <option value="รอการอนุมัติ">รอการอนุมัติ</option>
+                                    <option value="กำลังดำเนินการ">กำลังดำเนินการ</option>
+                                    <option value="รอตรวจสอบ">รอตรวจสอบ</option>
+                                    <option value="เสร็จสิ้น">เสร็จสิ้น</option>
+                                </select>
+                            </div>
+                        </div>
 
-                            <div class="flex justify-end space-x-4 pt-4">
-                                <button onclick="toggleNewTaskForm()" class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">ยกเลิก</button>
-                                <button onclick="createTask()" class="px-6 py-2 bg-gradient-to-r from-pink-400 to-pink-500 hover:from-pink-500 hover:to-pink-600 text-white rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl">✨ สร้างงาน</button>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">วันเริ่มต้น</label>
+                                <input type="date" id="taskStartDate" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-400 focus:border-pink-400 transition-colors">
                             </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">วันสิ้นสุด</label>
+                                <input type="date" id="taskEndDate" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-400 focus:border-pink-400 transition-colors">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">แนบไฟล์</label>
+                            <input type="file" id="taskFiles" multiple class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-400 focus:border-pink-400 transition-colors" onchange="handleFileSelect(event)">
+                            <div id="fileList" class="mt-2 space-y-2"></div>
+                        </div>
+
+                        <div class="flex justify-end space-x-4 pt-4">
+                            <button onclick="toggleNewTaskForm()" class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">ยกเลิก</button>
+                            <button onclick="createTask()" class="px-6 py-2 bg-gradient-to-r from-pink-400 to-pink-500 hover:from-pink-500 hover:to-pink-600 text-white rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl">✨ สร้างงาน</button>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Task Management Panel -->
+            <!-- 2. งานที่ต้องจัดการ -->
             <div class="mb-6 sm:mb-8">
                 <div class="bg-white rounded-xl card-shadow hover-lift p-4 sm:p-6">
-                        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 space-y-3 sm:space-y-0">
-                            <h3 class="text-base sm:text-lg font-bold text-gray-800 flex items-center">
-                                <span class="bg-pink-100 p-2 rounded-lg mr-3">🎯</span>
-                                งานที่ต้องจัดการ
-                            </h3>
-                            <select id="managementStatusFilter" onchange="filterManagementTasks()" class="px-3 py-1 border border-gray-300 rounded-lg text-xs sm:text-sm focus:ring-2 focus:ring-pink-400 focus:border-pink-400 transition-colors w-full sm:w-auto">
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 sm:mb-6 space-y-3 sm:space-y-0">
+                        <h2 class="text-lg sm:text-xl font-bold text-gray-800 flex items-center">
+                            <span class="bg-blue-100 p-2 rounded-lg mr-3">📋</span>
+                            งานที่ต้องจัดการ
+                        </h2>
+                        <div class="flex items-center space-x-2">
+                            <select id="managementStatusFilter" onchange="filterManagementTasks()" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-400 focus:border-pink-400 transition-colors text-sm">
                                 <option value="">ทุกสถานะ</option>
                                 <option value="รอการอนุมัติ">รอการอนุมัติ</option>
                                 <option value="กำลังดำเนินการ">กำลังดำเนินการ</option>
@@ -291,130 +291,122 @@
                                 <option value="เสร็จสิ้น">เสร็จสิ้น</option>
                             </select>
                         </div>
-                        
-                        <!-- Status Tabs -->
-                        <div class="flex space-x-1 mb-4 bg-gray-100 p-1 rounded-lg overflow-x-auto">
-                            <button onclick="showManagementStatus('รอการอนุมัติ')" class="management-status-tab flex-1 px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium rounded-md transition-colors bg-white text-gray-900 shadow-sm whitespace-nowrap" data-status="รอการอนุมัติ">
-                                🌙 <span class="hidden sm:inline">รอการอนุมัติ</span><span class="sm:hidden">รออนุมัติ</span>
+                    </div>
+
+                    <!-- Status Tabs -->
+                    <div class="border-b border-gray-200 mb-6">
+                        <nav class="-mb-px flex space-x-8 overflow-x-auto">
+                            <button onclick="showManagementStatus('pending')" data-status="pending" class="management-status-tab bg-white text-gray-900 shadow-sm whitespace-nowrap py-2 px-4 border-b-2 border-transparent font-medium text-sm hover:text-gray-700 hover:border-gray-300 transition-colors">
+                                ⏳ รอการอนุมัติ
                             </button>
-                            <button onclick="showManagementStatus('กำลังดำเนินการ')" class="management-status-tab flex-1 px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium rounded-md transition-colors text-gray-600 hover:text-gray-900 whitespace-nowrap" data-status="กำลังดำเนินการ">
-                                🌸 <span class="hidden sm:inline">กำลังดำเนินการ</span><span class="sm:hidden">ดำเนินการ</span>
+                            <button onclick="showManagementStatus('inprogress')" data-status="inprogress" class="management-status-tab text-gray-600 hover:text-gray-900 whitespace-nowrap py-2 px-4 border-b-2 border-transparent font-medium text-sm hover:border-gray-300 transition-colors">
+                                🔄 กำลังดำเนินการ
                             </button>
-                            <button onclick="showManagementStatus('รอตรวจสอบ')" class="management-status-tab flex-1 px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium rounded-md transition-colors text-gray-600 hover:text-gray-900 whitespace-nowrap" data-status="รอตรวจสอบ">
-                                🌺 <span class="hidden sm:inline">รอตรวจสอบ</span><span class="sm:hidden">รอตรวจ</span>
+                            <button onclick="showManagementStatus('review')" data-status="review" class="management-status-tab text-gray-600 hover:text-gray-900 whitespace-nowrap py-2 px-4 border-b-2 border-transparent font-medium text-sm hover:border-gray-300 transition-colors">
+                                🔍 รอตรวจสอบ
                             </button>
-                            <button onclick="showManagementStatus('เสร็จสิ้น')" class="management-status-tab flex-1 px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium rounded-md transition-colors text-gray-600 hover:text-gray-900 whitespace-nowrap" data-status="เสร็จสิ้น">
-                                🌟 <span class="hidden sm:inline">เสร็จสิ้น</span><span class="sm:hidden">เสร็จ</span>
+                            <button onclick="showManagementStatus('completed')" data-status="completed" class="management-status-tab text-gray-600 hover:text-gray-900 whitespace-nowrap py-2 px-4 border-b-2 border-transparent font-medium text-sm hover:border-gray-300 transition-colors">
+                                ✅ เสร็จสิ้น
                             </button>
+                        </nav>
+                    </div>
+
+                    <!-- Status Content -->
+                    <div id="status-pending" class="management-status-content">
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ชื่องาน</th>
+                                        <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">รายละเอียด</th>
+                                        <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">วันที่</th>
+                                        <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">เวลาที่เหลือ</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="pendingTasksTable" class="bg-white divide-y divide-gray-200">
+                                    <!-- Dynamic content -->
+                                </tbody>
+                            </table>
                         </div>
+                    </div>
 
-                        <!-- Task Tables by Status -->
-                        <div id="managementTasksContainer" class="max-h-96 overflow-y-auto">
-                            <!-- Pending Tasks -->
-                            <div id="status-รอการอนุมัติ" class="management-status-content">
-                                <div class="overflow-x-auto">
-                                    <table class="w-full text-sm">
-                                        <thead class="bg-yellow-50">
-                                            <tr>
-                                                <th class="px-3 py-2 text-left text-xs font-medium text-yellow-800">ชื่อเรื่อง</th>
-                                                <th class="px-3 py-2 text-left text-xs font-medium text-yellow-800">รายละเอียด</th>
-                                                <th class="px-3 py-2 text-left text-xs font-medium text-yellow-800">วันเริ่มต้น/สิ้นสุด</th>
-                                                <th class="px-3 py-2 text-left text-xs font-medium text-yellow-800">วันที่เหลือ</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="pendingTasksTable" class="divide-y divide-yellow-100">
-                                            <!-- Dynamic content -->
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
+                    <div id="status-inprogress" class="management-status-content hidden">
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ชื่องาน</th>
+                                        <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">รายละเอียด</th>
+                                        <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">วันที่</th>
+                                        <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">เวลาที่เหลือ</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="inProgressTasksTable" class="bg-white divide-y divide-gray-200">
+                                    <!-- Dynamic content -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
 
-                            <!-- In Progress Tasks -->
-                            <div id="status-กำลังดำเนินการ" class="management-status-content hidden">
-                                <div class="overflow-x-auto">
-                                    <table class="w-full text-sm">
-                                        <thead class="bg-blue-50">
-                                            <tr>
-                                                <th class="px-3 py-2 text-left text-xs font-medium text-blue-800">ชื่อเรื่อง</th>
-                                                <th class="px-3 py-2 text-left text-xs font-medium text-blue-800">รายละเอียด</th>
-                                                <th class="px-3 py-2 text-left text-xs font-medium text-blue-800">วันเริ่มต้น/สิ้นสุด</th>
-                                                <th class="px-3 py-2 text-left text-xs font-medium text-blue-800">วันที่เหลือ</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="inProgressTasksTable" class="divide-y divide-blue-100">
-                                            <!-- Dynamic content -->
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
+                    <div id="status-review" class="management-status-content hidden">
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ชื่องาน</th>
+                                        <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">รายละเอียด</th>
+                                        <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">วันที่</th>
+                                        <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">เวลาที่เหลือ</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="reviewTasksTable" class="bg-white divide-y divide-gray-200">
+                                    <!-- Dynamic content -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
 
-                            <!-- Review Tasks -->
-                            <div id="status-รอตรวจสอบ" class="management-status-content hidden">
-                                <div class="overflow-x-auto">
-                                    <table class="w-full text-sm">
-                                        <thead class="bg-purple-50">
-                                            <tr>
-                                                <th class="px-3 py-2 text-left text-xs font-medium text-purple-800">ชื่อเรื่อง</th>
-                                                <th class="px-3 py-2 text-left text-xs font-medium text-purple-800">รายละเอียด</th>
-                                                <th class="px-3 py-2 text-left text-xs font-medium text-purple-800">วันเริ่มต้น/สิ้นสุด</th>
-                                                <th class="px-3 py-2 text-left text-xs font-medium text-purple-800">วันที่เหลือ</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="reviewTasksTable" class="divide-y divide-purple-100">
-                                            <!-- Dynamic content -->
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-
-                            <!-- Completed Tasks -->
-                            <div id="status-เสร็จสิ้น" class="management-status-content hidden">
-                                <div class="overflow-x-auto">
-                                    <table class="w-full text-sm">
-                                        <thead class="bg-green-50">
-                                            <tr>
-                                                <th class="px-3 py-2 text-left text-xs font-medium text-green-800">ชื่อเรื่อง</th>
-                                                <th class="px-3 py-2 text-left text-xs font-medium text-green-800">รายละเอียด</th>
-                                                <th class="px-3 py-2 text-left text-xs font-medium text-green-800">วันเริ่มต้น/สิ้นสุด</th>
-                                                <th class="px-3 py-2 text-left text-xs font-medium text-green-800">วันที่เหลือ</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="completedTasksTable" class="divide-y divide-green-100">
-                                            <!-- Dynamic content -->
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
+                    <div id="status-completed" class="management-status-content hidden">
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ชื่องาน</th>
+                                        <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">รายละเอียด</th>
+                                        <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">วันที่</th>
+                                        <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">เวลาที่เหลือ</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="completedTasksTable" class="bg-white divide-y divide-gray-200">
+                                    <!-- Dynamic content -->
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- All Tasks Table -->
-            <div class="mt-4 sm:mt-8 bg-white rounded-xl card-shadow p-4 sm:p-6">
-                <div class="flex items-center justify-between mb-4 sm:mb-6">
-                    <h3 class="text-base sm:text-lg font-bold text-gray-800 flex items-center">
-                        <span class="bg-pink-100 p-2 rounded-lg mr-3">🎀</span>
-                        <span class="hidden sm:inline">รายการงานทั้งหมด</span><span class="sm:hidden">งานทั้งหมด</span>
-                    </h3>
-                </div>
+            <!-- 3. รายการงานทั้งหมด -->
+            <div class="mb-6 sm:mb-8">
+                <div class="bg-white rounded-xl card-shadow hover-lift p-4 sm:p-6">
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 sm:mb-6 space-y-3 sm:space-y-0">
+                        <h2 class="text-lg sm:text-xl font-bold text-gray-800 flex items-center">
+                            <span class="bg-green-100 p-2 rounded-lg mr-3">📊</span>
+                            รายการงานทั้งหมด
+                        </h2>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-sm text-gray-600">📈 ข้อมูลจาก Google Sheets</span>
+                        </div>
+                    </div>
 
-                <div class="overflow-x-auto -mx-4 sm:mx-0">
-                    <div class="inline-block min-w-full align-middle">
-                        <table id="tasksDataTable" class="w-full table-auto display">
-                            <thead>
-                                <tr>
-                                    <th class="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm font-medium text-gray-700">ชื่องาน</th>
-                                    <th class="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm font-medium text-gray-700 hidden sm:table-cell">วันที่สร้าง</th>
-                                    <th class="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm font-medium text-gray-700">วันสิ้นสุด</th>
-                                    <th class="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm font-medium text-gray-700">วันที่เหลือ</th>
-                                    <th class="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm font-medium text-gray-700">สถานะ</th>
-                                    <th class="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm font-medium text-gray-700 hidden sm:table-cell">ความสำคัญ</th>
-                                    <th class="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm font-medium text-gray-700">จัดการ</th>
-                                </tr>
+                    <!-- DataTable -->
+                    <div class="overflow-x-auto">
+                        <table id="tasksDataTable" class="min-w-full divide-y divide-gray-200 table-auto">
+                            <thead class="bg-gray-50">
+                                <!-- DataTable will generate headers automatically -->
                             </thead>
-                            <tbody>
-                                <!-- Data will be populated by DataTable -->
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <!-- DataTable will populate this automatically -->
                             </tbody>
                         </table>
                     </div>
@@ -424,60 +416,88 @@
 
         <!-- Dashboard Tab -->
         <div id="dashboard" class="tab-content">
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
-                <!-- KPI Cards -->
-                <div class="bg-gradient-to-r from-pink-400 to-pink-500 text-white p-4 sm:p-6 rounded-xl card-shadow hover-lift">
+            <!-- 1. CARD รอการอนุมัติ, กำลังดำเนินการ, รอตรวจสอบ, เสร็จสิ้น -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
+                <!-- รอการอนุมัติ -->
+                <div class="bg-gradient-to-r from-yellow-400 to-yellow-500 text-white p-4 sm:p-6 rounded-xl card-shadow hover-lift">
                     <div class="flex items-center justify-between">
                         <div class="flex-1 min-w-0">
-                            <p class="text-pink-100 text-xs sm:text-sm font-medium">ความสำเร็จโดยรวม</p>
-                            <p class="text-2xl sm:text-3xl font-bold">75%</p>
-                            <div class="w-full bg-pink-300 rounded-full h-2 mt-2">
-                                <div class="bg-white h-2 rounded-full" style="width: 75%"></div>
+                            <p class="text-yellow-100 text-xs sm:text-sm font-medium">รอการอนุมัติ</p>
+                            <p class="text-2xl sm:text-3xl font-bold" id="dashboardPendingCount">0</p>
+                            <div class="w-full bg-yellow-300 rounded-full h-2 mt-2">
+                                <div class="bg-white h-2 rounded-full transition-all duration-500" id="dashboardPendingBar" style="width: 0%"></div>
                             </div>
+                            <p class="text-yellow-100 text-xs mt-1" id="dashboardPendingPercent">0% ของงานทั้งหมด</p>
                         </div>
-                        <div class="text-3xl sm:text-4xl opacity-90 ml-2">🌸</div>
+                        <div class="text-3xl sm:text-4xl opacity-90 ml-2">⏳</div>
                     </div>
                 </div>
 
+                <!-- กำลังดำเนินการ -->
+                <div class="bg-gradient-to-r from-blue-400 to-blue-500 text-white p-4 sm:p-6 rounded-xl card-shadow hover-lift">
+                    <div class="flex items-center justify-between">
+                        <div class="flex-1 min-w-0">
+                            <p class="text-blue-100 text-xs sm:text-sm font-medium">กำลังดำเนินการ</p>
+                            <p class="text-2xl sm:text-3xl font-bold" id="dashboardInProgressCount">0</p>
+                            <div class="w-full bg-blue-300 rounded-full h-2 mt-2">
+                                <div class="bg-white h-2 rounded-full transition-all duration-500" id="dashboardInProgressBar" style="width: 0%"></div>
+                            </div>
+                            <p class="text-blue-100 text-xs mt-1" id="dashboardInProgressPercent">0% ของงานทั้งหมด</p>
+                        </div>
+                        <div class="text-3xl sm:text-4xl opacity-90 ml-2">🔄</div>
+                    </div>
+                </div>
+
+                <!-- รอตรวจสอบ -->
                 <div class="bg-gradient-to-r from-purple-400 to-purple-500 text-white p-4 sm:p-6 rounded-xl card-shadow hover-lift">
                     <div class="flex items-center justify-between">
                         <div class="flex-1 min-w-0">
-                            <p class="text-purple-100 text-xs sm:text-sm font-medium">ภาระงานทั้งหมด</p>
-                            <p class="text-2xl sm:text-3xl font-bold">120</p>
-                            <p class="text-purple-100 text-xs mt-1">🌺 เพิ่มขึ้น 8%</p>
+                            <p class="text-purple-100 text-xs sm:text-sm font-medium">รอตรวจสอบ</p>
+                            <p class="text-2xl sm:text-3xl font-bold" id="dashboardReviewCount">0</p>
+                            <div class="w-full bg-purple-300 rounded-full h-2 mt-2">
+                                <div class="bg-white h-2 rounded-full transition-all duration-500" id="dashboardReviewBar" style="width: 0%"></div>
+                            </div>
+                            <p class="text-purple-100 text-xs mt-1" id="dashboardReviewPercent">0% ของงานทั้งหมด</p>
                         </div>
-                        <div class="text-3xl sm:text-4xl opacity-90 ml-2">🎀</div>
+                        <div class="text-3xl sm:text-4xl opacity-90 ml-2">🔍</div>
                     </div>
                 </div>
 
-                <div class="bg-gradient-to-r from-green-400 to-green-500 text-white p-4 sm:p-6 rounded-xl card-shadow hover-lift sm:col-span-2 lg:col-span-1">
+                <!-- เสร็จสิ้น -->
+                <div class="bg-gradient-to-r from-green-400 to-green-500 text-white p-4 sm:p-6 rounded-xl card-shadow hover-lift">
                     <div class="flex items-center justify-between">
                         <div class="flex-1 min-w-0">
-                            <p class="text-green-100 text-xs sm:text-sm font-medium">เสร็จสมบูรณ์</p>
-                            <p class="text-2xl sm:text-3xl font-bold">90</p>
-                            <p class="text-green-100 text-xs mt-1">🌟 คุณภาพดี</p>
+                            <p class="text-green-100 text-xs sm:text-sm font-medium">เสร็จสิ้น</p>
+                            <p class="text-2xl sm:text-3xl font-bold" id="dashboardCompletedCount">0</p>
+                            <div class="w-full bg-green-300 rounded-full h-2 mt-2">
+                                <div class="bg-white h-2 rounded-full transition-all duration-500" id="dashboardCompletedBar" style="width: 0%"></div>
+                            </div>
+                            <p class="text-green-100 text-xs mt-1" id="dashboardCompletedPercent">0% ของงานทั้งหมด</p>
                         </div>
-                        <div class="text-3xl sm:text-4xl opacity-90 ml-2">💖</div>
+                        <div class="text-3xl sm:text-4xl opacity-90 ml-2">✅</div>
                     </div>
                 </div>
             </div>
 
-            <!-- Charts Section -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-8 mb-6 sm:mb-8">
+            <!-- 2. ความสำเร็จรายกลุ่มงาน -->
+            <div class="mb-6 sm:mb-8">
                 <div class="bg-white p-4 sm:p-6 rounded-xl card-shadow hover-lift">
                     <h3 class="text-base sm:text-lg font-bold text-gray-800 mb-4 flex items-center">
                         <span class="bg-pink-100 p-2 rounded-lg mr-3">🌸</span>
-                        <span class="hidden sm:inline">ความสำเร็จรายกลุ่มงาน</span><span class="sm:hidden">ความสำเร็จ</span>
+                        ความสำเร็จรายกลุ่มงาน
                     </h3>
                     <div class="h-64 sm:h-auto">
                         <canvas id="groupChart" width="400" height="200"></canvas>
                     </div>
                 </div>
+            </div>
 
+            <!-- 3. สถานะงานโดยรวม -->
+            <div class="mb-6 sm:mb-8">
                 <div class="bg-white p-4 sm:p-6 rounded-xl card-shadow hover-lift">
                     <h3 class="text-base sm:text-lg font-bold text-gray-800 mb-4 flex items-center">
                         <span class="bg-pink-100 p-2 rounded-lg mr-3">🎀</span>
-                        <span class="hidden sm:inline">สถานะงานโดยรวม</span><span class="sm:hidden">สถานะงาน</span>
+                        สถานะงานโดยรวม
                     </h3>
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
                         <div class="h-64 sm:h-auto">
@@ -487,41 +507,53 @@
                             <div class="flex items-center justify-between p-2 sm:p-3 bg-green-50 rounded-lg border border-green-200">
                                 <div class="flex items-center min-w-0 flex-1">
                                     <div class="w-3 h-3 sm:w-4 sm:h-4 bg-green-500 rounded-full mr-2 sm:mr-3 flex-shrink-0"></div>
-                                    <span class="text-xs sm:text-sm font-medium text-green-800 truncate">เสร็จสิ้น</span>
+                                    <div class="flex flex-col min-w-0 flex-1">
+                                        <span class="text-xs sm:text-sm font-medium text-green-800 truncate">✅ เสร็จสิ้น</span>
+                                        <span class="text-xs text-green-600 opacity-75">งานที่ดำเนินการเสร็จสมบูรณ์</span>
+                                    </div>
                                 </div>
                                 <div class="text-right ml-2">
-                                    <div class="text-sm sm:text-lg font-bold text-green-600">90</div>
-                                    <div class="text-xs text-green-600">69.2%</div>
+                                    <div class="text-sm sm:text-lg font-bold text-green-600" id="statusCompletedCount">90</div>
+                                    <div class="text-xs text-green-600" id="statusCompletedPercent">69.2%</div>
                                 </div>
                             </div>
                             <div class="flex items-center justify-between p-2 sm:p-3 bg-blue-50 rounded-lg border border-blue-200">
                                 <div class="flex items-center min-w-0 flex-1">
                                     <div class="w-3 h-3 sm:w-4 sm:h-4 bg-blue-500 rounded-full mr-2 sm:mr-3 flex-shrink-0"></div>
-                                    <span class="text-xs sm:text-sm font-medium text-blue-800 truncate">กำลังดำเนินการ</span>
+                                    <div class="flex flex-col min-w-0 flex-1">
+                                        <span class="text-xs sm:text-sm font-medium text-blue-800 truncate">🔄 กำลังดำเนินการ</span>
+                                        <span class="text-xs text-blue-600 opacity-75">งานที่อยู่ระหว่างดำเนินการ</span>
+                                    </div>
                                 </div>
                                 <div class="text-right ml-2">
-                                    <div class="text-sm sm:text-lg font-bold text-blue-600">25</div>
-                                    <div class="text-xs text-blue-600">19.2%</div>
+                                    <div class="text-sm sm:text-lg font-bold text-blue-600" id="statusInProgressCount">25</div>
+                                    <div class="text-xs text-blue-600" id="statusInProgressPercent">19.2%</div>
                                 </div>
                             </div>
                             <div class="flex items-center justify-between p-2 sm:p-3 bg-purple-50 rounded-lg border border-purple-200">
                                 <div class="flex items-center min-w-0 flex-1">
                                     <div class="w-3 h-3 sm:w-4 sm:h-4 bg-purple-500 rounded-full mr-2 sm:mr-3 flex-shrink-0"></div>
-                                    <span class="text-xs sm:text-sm font-medium text-purple-800 truncate">รอตรวจสอบ</span>
+                                    <div class="flex flex-col min-w-0 flex-1">
+                                        <span class="text-xs sm:text-sm font-medium text-purple-800 truncate">🔍 รอตรวจสอบ</span>
+                                        <span class="text-xs text-purple-600 opacity-75">งานที่รอการตรวจสอบผลงาน</span>
+                                    </div>
                                 </div>
                                 <div class="text-right ml-2">
-                                    <div class="text-sm sm:text-lg font-bold text-purple-600">10</div>
-                                    <div class="text-xs text-purple-600">7.7%</div>
+                                    <div class="text-sm sm:text-lg font-bold text-purple-600" id="statusReviewCount">10</div>
+                                    <div class="text-xs text-purple-600" id="statusReviewPercent">7.7%</div>
                                 </div>
                             </div>
                             <div class="flex items-center justify-between p-2 sm:p-3 bg-yellow-50 rounded-lg border border-yellow-200">
                                 <div class="flex items-center min-w-0 flex-1">
                                     <div class="w-3 h-3 sm:w-4 sm:h-4 bg-yellow-500 rounded-full mr-2 sm:mr-3 flex-shrink-0"></div>
-                                    <span class="text-xs sm:text-sm font-medium text-yellow-800 truncate">รอการอนุมัติ</span>
+                                    <div class="flex flex-col min-w-0 flex-1">
+                                        <span class="text-xs sm:text-sm font-medium text-yellow-800 truncate">⏳ รอการอนุมัติ</span>
+                                        <span class="text-xs text-yellow-600 opacity-75">งานที่รอการอนุมัติจากผู้บริหาร</span>
+                                    </div>
                                 </div>
                                 <div class="text-right ml-2">
-                                    <div class="text-sm sm:text-lg font-bold text-yellow-600">5</div>
-                                    <div class="text-xs text-yellow-600">3.8%</div>
+                                    <div class="text-sm sm:text-lg font-bold text-yellow-600" id="statusPendingCount">5</div>
+                                    <div class="text-xs text-yellow-600" id="statusPendingPercent">3.8%</div>
                                 </div>
                             </div>
                         </div>
@@ -529,7 +561,7 @@
                 </div>
             </div>
 
-            <!-- Department Cards -->
+            <!-- 4. CARD กลุ่มงานที่แสดงสถานะ -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
                 <div class="bg-white p-4 sm:p-6 rounded-xl card-shadow hover-lift border-l-4 border-pink-400">
                     <div class="flex items-center mb-3">
@@ -560,27 +592,27 @@
                     </div>
                 </div>
 
-                <div class="bg-white p-6 rounded-xl card-shadow hover-lift border-l-4 border-purple-400">
+                <div class="bg-white p-4 sm:p-6 rounded-xl card-shadow hover-lift border-l-4 border-purple-400">
                     <div class="flex items-center mb-3">
-                        <span class="bg-purple-100 p-2 rounded-lg mr-3">🌺</span>
-                        <h4 class="font-bold text-gray-800 text-sm">กลุ่มงานห้องสมุดและสารสนเทศ</h4>
+                        <span class="bg-purple-100 p-2 rounded-lg mr-2 sm:mr-3 flex-shrink-0">🌺</span>
+                        <h4 class="font-bold text-gray-800 text-xs sm:text-sm leading-tight">กลุ่มงานห้องสมุดและสารสนเทศ</h4>
                     </div>
                     <div class="space-y-2">
-                        <div class="flex justify-between text-sm">
-                            <span class="text-gray-600 flex items-center">📊 งานทั้งหมด:</span>
-                            <span class="font-bold text-gray-800">25</span>
+                        <div class="flex justify-between text-xs sm:text-sm">
+                            <span class="text-gray-600 flex items-center truncate">📊 งานทั้งหมด:</span>
+                            <span class="font-bold text-gray-800 ml-2">25</span>
                         </div>
-                        <div class="flex justify-between text-sm">
-                            <span class="text-gray-600 flex items-center">✅ เสร็จสมบูรณ์:</span>
-                            <span class="font-bold text-green-600">20</span>
+                        <div class="flex justify-between text-xs sm:text-sm">
+                            <span class="text-gray-600 flex items-center truncate">✅ เสร็จสมบูรณ์:</span>
+                            <span class="font-bold text-green-600 ml-2">20</span>
                         </div>
-                        <div class="flex justify-between text-sm">
-                            <span class="text-gray-600 flex items-center">🔄 กำลังดำเนินการ:</span>
-                            <span class="font-bold text-blue-600">3</span>
+                        <div class="flex justify-between text-xs sm:text-sm">
+                            <span class="text-gray-600 flex items-center truncate">🔄 กำลังดำเนินการ:</span>
+                            <span class="font-bold text-blue-600 ml-2">3</span>
                         </div>
-                        <div class="flex justify-between text-sm">
-                            <span class="text-gray-600 flex items-center">🔍 รอตรวจสอบ:</span>
-                            <span class="font-bold text-purple-600">2</span>
+                        <div class="flex justify-between text-xs sm:text-sm">
+                            <span class="text-gray-600 flex items-center truncate">🔍 รอตรวจสอบ:</span>
+                            <span class="font-bold text-purple-600 ml-2">2</span>
                         </div>
                         <div class="w-full bg-gray-200 rounded-full h-2 mt-3">
                             <div class="bg-gradient-to-r from-purple-400 to-purple-500 h-2 rounded-full" style="width: 80%"></div>
@@ -589,27 +621,27 @@
                     </div>
                 </div>
 
-                <div class="bg-white p-6 rounded-xl card-shadow hover-lift border-l-4 border-blue-400">
+                <div class="bg-white p-4 sm:p-6 rounded-xl card-shadow hover-lift border-l-4 border-blue-400">
                     <div class="flex items-center mb-3">
-                        <span class="bg-blue-100 p-2 rounded-lg mr-3">🌟</span>
-                        <h4 class="font-bold text-gray-800 text-sm">กลุ่มงานวิจัยและคุณภาพการศึกษา</h4>
+                        <span class="bg-blue-100 p-2 rounded-lg mr-2 sm:mr-3 flex-shrink-0">🌟</span>
+                        <h4 class="font-bold text-gray-800 text-xs sm:text-sm leading-tight">กลุ่มงานวิจัยและคุณภาพการศึกษา</h4>
                     </div>
                     <div class="space-y-2">
-                        <div class="flex justify-between text-sm">
-                            <span class="text-gray-600 flex items-center">📊 งานทั้งหมด:</span>
-                            <span class="font-bold text-gray-800">35</span>
+                        <div class="flex justify-between text-xs sm:text-sm">
+                            <span class="text-gray-600 flex items-center truncate">📊 งานทั้งหมด:</span>
+                            <span class="font-bold text-gray-800 ml-2">35</span>
                         </div>
-                        <div class="flex justify-between text-sm">
-                            <span class="text-gray-600 flex items-center">✅ เสร็จสมบูรณ์:</span>
-                            <span class="font-bold text-green-600">28</span>
+                        <div class="flex justify-between text-xs sm:text-sm">
+                            <span class="text-gray-600 flex items-center truncate">✅ เสร็จสมบูรณ์:</span>
+                            <span class="font-bold text-green-600 ml-2">28</span>
                         </div>
-                        <div class="flex justify-between text-sm">
-                            <span class="text-gray-600 flex items-center">🔄 กำลังดำเนินการ:</span>
-                            <span class="font-bold text-blue-600">5</span>
+                        <div class="flex justify-between text-xs sm:text-sm">
+                            <span class="text-gray-600 flex items-center truncate">🔄 กำลังดำเนินการ:</span>
+                            <span class="font-bold text-blue-600 ml-2">5</span>
                         </div>
-                        <div class="flex justify-between text-sm">
-                            <span class="text-gray-600 flex items-center">🔍 รอตรวจสอบ:</span>
-                            <span class="font-bold text-purple-600">2</span>
+                        <div class="flex justify-between text-xs sm:text-sm">
+                            <span class="text-gray-600 flex items-center truncate">🔍 รอตรวจสอบ:</span>
+                            <span class="font-bold text-purple-600 ml-2">2</span>
                         </div>
                         <div class="w-full bg-gray-200 rounded-full h-2 mt-3">
                             <div class="bg-gradient-to-r from-blue-400 to-blue-500 h-2 rounded-full" style="width: 80%"></div>
@@ -618,27 +650,27 @@
                     </div>
                 </div>
 
-                <div class="bg-white p-6 rounded-xl card-shadow hover-lift border-l-4 border-green-400">
+                <div class="bg-white p-4 sm:p-6 rounded-xl card-shadow hover-lift border-l-4 border-green-400">
                     <div class="flex items-center mb-3">
-                        <span class="bg-green-100 p-2 rounded-lg mr-3">💖</span>
-                        <h4 class="font-bold text-gray-800 text-sm">กลุ่มงานส่งเสริมพระพุทธศาสนาและบริการสังคม</h4>
+                        <span class="bg-green-100 p-2 rounded-lg mr-2 sm:mr-3 flex-shrink-0">💖</span>
+                        <h4 class="font-bold text-gray-800 text-xs sm:text-sm leading-tight">กลุ่มงานส่งเสริมพระพุทธศาสนาและบริการสังคม</h4>
                     </div>
                     <div class="space-y-2">
-                        <div class="flex justify-between text-sm">
-                            <span class="text-gray-600 flex items-center">📊 งานทั้งหมด:</span>
-                            <span class="font-bold text-gray-800">30</span>
+                        <div class="flex justify-between text-xs sm:text-sm">
+                            <span class="text-gray-600 flex items-center truncate">📊 งานทั้งหมด:</span>
+                            <span class="font-bold text-gray-800 ml-2">30</span>
                         </div>
-                        <div class="flex justify-between text-sm">
-                            <span class="text-gray-600 flex items-center">✅ เสร็จสมบูรณ์:</span>
-                            <span class="font-bold text-green-600">17</span>
+                        <div class="flex justify-between text-xs sm:text-sm">
+                            <span class="text-gray-600 flex items-center truncate">✅ เสร็จสมบูรณ์:</span>
+                            <span class="font-bold text-green-600 ml-2">17</span>
                         </div>
-                        <div class="flex justify-between text-sm">
-                            <span class="text-gray-600 flex items-center">🔄 กำลังดำเนินการ:</span>
-                            <span class="font-bold text-blue-600">13</span>
+                        <div class="flex justify-between text-xs sm:text-sm">
+                            <span class="text-gray-600 flex items-center truncate">🔄 กำลังดำเนินการ:</span>
+                            <span class="font-bold text-blue-600 ml-2">13</span>
                         </div>
-                        <div class="flex justify-between text-sm">
-                            <span class="text-gray-600 flex items-center">🔍 รอตรวจสอบ:</span>
-                            <span class="font-bold text-purple-600">0</span>
+                        <div class="flex justify-between text-xs sm:text-sm">
+                            <span class="text-gray-600 flex items-center truncate">🔍 รอตรวจสอบ:</span>
+                            <span class="font-bold text-purple-600 ml-2">0</span>
                         </div>
                         <div class="w-full bg-gray-200 rounded-full h-2 mt-3">
                             <div class="bg-gradient-to-r from-green-400 to-green-500 h-2 rounded-full" style="width: 57%"></div>
@@ -651,10 +683,11 @@
 
         <!-- Summary Tab -->
         <div id="summary" class="tab-content">
+            <!-- 1. รายละเอียดสถานะงานรายกลุ่มงาน -->
             <div class="bg-white rounded-xl card-shadow p-4 sm:p-6 mb-6 sm:mb-8">
                 <h2 class="text-lg sm:text-xl font-bold text-gray-800 mb-4 sm:mb-6 flex items-center">
                     <span class="bg-pink-100 p-2 rounded-lg mr-3">📈</span>
-                    <span class="hidden sm:inline">รายละเอียดสถานะงานรายกลุ่มงาน</span><span class="sm:hidden">สถานะงานรายกลุ่ม</span>
+                    รายละเอียดสถานะงานรายกลุ่มงาน
                 </h2>
                 
                 <!-- Group Selection -->
@@ -699,9 +732,9 @@
                 </div>
             </div>
 
-            <!-- Individual Performance -->
-            <div class="bg-white rounded-xl card-shadow p-6">
-                <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
+            <!-- 2. สรุปผลการปฏิบัติงานรายบุคคล -->
+            <div class="bg-white rounded-xl card-shadow p-4 sm:p-6 mb-6 sm:mb-8">
+                <h2 class="text-lg sm:text-xl font-bold text-gray-800 mb-4 sm:mb-6 flex items-center">
                     <span class="bg-pink-100 p-2 rounded-lg mr-3">👤</span>
                     สรุปผลการปฏิบัติงานรายบุคคล
                 </h2>
@@ -824,13 +857,15 @@
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <!-- Performance Chart -->
+            <!-- 3. กราฟแสดงผลการปฏิบัติงาน -->
+            <div class="bg-white rounded-xl card-shadow p-4 sm:p-6">
+                <h2 class="text-lg sm:text-xl font-bold text-gray-800 mb-4 sm:mb-6 flex items-center">
+                    <span class="bg-pink-100 p-2 rounded-lg mr-3">📊</span>
+                    กราฟแสดงผลการปฏิบัติงาน
+                </h2>
                 <div class="bg-gradient-to-r from-gray-50 to-gray-100 p-6 rounded-xl border border-gray-200">
-                    <h3 class="text-lg font-medium text-gray-800 mb-4 flex items-center">
-                        <span class="bg-pink-100 p-2 rounded-lg mr-3">📊</span>
-                        กราฟแสดงผลการปฏิบัติงาน
-                    </h3>
                     <div class="bg-white p-4 rounded-lg">
                         <canvas id="staffPerformanceChart" width="400" height="200"></canvas>
                     </div>
@@ -1127,7 +1162,7 @@
                     updateTaskTable();
                     updateManagementTasks();
                     
-                    // Update dashboard and staff data safely with delay
+                    // Update dashboard and summary data safely with delay
                     setTimeout(() => {
                         try {
                             updateDashboardData();
@@ -1404,7 +1439,7 @@
                     Swal.close();
                 }
 
-                // Update dashboard data safely with delay
+                // Update dashboard and summary data safely with delay
                 setTimeout(() => {
                     try {
                         updateDashboardData();
@@ -2063,28 +2098,31 @@
 
         // Update dashboard numbers
         function updateDashboardNumbers(completed, inProgress, review, pending, total) {
-            const successRate = total > 0 ? Math.round((completed / total) * 100) : 0;
+            // Update main status cards
+            const pendingPercent = total > 0 ? Math.round((pending / total) * 100) : 0;
+            const inProgressPercent = total > 0 ? Math.round((inProgress / total) * 100) : 0;
+            const reviewPercent = total > 0 ? Math.round((review / total) * 100) : 0;
+            const completedPercent = total > 0 ? Math.round((completed / total) * 100) : 0;
             
-            // Update KPI cards
-            const successCard = document.querySelector('.bg-gradient-to-r.from-pink-400');
-            if (successCard) {
-                const percentage = successCard.querySelector('.text-3xl');
-                const progressBar = successCard.querySelector('.bg-white');
-                if (percentage) percentage.textContent = successRate + '%';
-                if (progressBar) progressBar.style.width = successRate + '%';
-            }
+            // Update pending card
+            document.getElementById('dashboardPendingCount').textContent = pending;
+            document.getElementById('dashboardPendingPercent').textContent = pendingPercent + '% ของงานทั้งหมด';
+            document.getElementById('dashboardPendingBar').style.width = pendingPercent + '%';
             
-            const totalCard = document.querySelector('.bg-gradient-to-r.from-purple-400');
-            if (totalCard) {
-                const totalNumber = totalCard.querySelector('.text-3xl');
-                if (totalNumber) totalNumber.textContent = total;
-            }
+            // Update in progress card
+            document.getElementById('dashboardInProgressCount').textContent = inProgress;
+            document.getElementById('dashboardInProgressPercent').textContent = inProgressPercent + '% ของงานทั้งหมด';
+            document.getElementById('dashboardInProgressBar').style.width = inProgressPercent + '%';
             
-            const completedCard = document.querySelector('.bg-gradient-to-r.from-green-400');
-            if (completedCard) {
-                const completedNumber = completedCard.querySelector('.text-3xl');
-                if (completedNumber) completedNumber.textContent = completed;
-            }
+            // Update review card
+            document.getElementById('dashboardReviewCount').textContent = review;
+            document.getElementById('dashboardReviewPercent').textContent = reviewPercent + '% ของงานทั้งหมด';
+            document.getElementById('dashboardReviewBar').style.width = reviewPercent + '%';
+            
+            // Update completed card
+            document.getElementById('dashboardCompletedCount').textContent = completed;
+            document.getElementById('dashboardCompletedPercent').textContent = completedPercent + '% ของงานทั้งหมด';
+            document.getElementById('dashboardCompletedBar').style.width = completedPercent + '%';
         }
 
         // Update dashboard charts with real data
@@ -2109,23 +2147,36 @@
                 // Don't throw error to prevent SweetAlert from showing chart errors
             }
             
-            // Update status summary numbers
-            const statusSummary = [
-                { selector: '.bg-green-50', count: completed, percentage: ((completed / (completed + inProgress + review + pending)) * 100).toFixed(1) },
-                { selector: '.bg-blue-50', count: inProgress, percentage: ((inProgress / (completed + inProgress + review + pending)) * 100).toFixed(1) },
-                { selector: '.bg-purple-50', count: review, percentage: ((review / (completed + inProgress + review + pending)) * 100).toFixed(1) },
-                { selector: '.bg-yellow-50', count: pending, percentage: ((pending / (completed + inProgress + review + pending)) * 100).toFixed(1) }
-            ];
+            // Update status summary numbers with IDs
+            const total = completed + inProgress + review + pending;
             
-            statusSummary.forEach(item => {
-                const element = document.querySelector(item.selector);
-                if (element) {
-                    const countElement = element.querySelector('.text-lg.font-bold');
-                    const percentElement = element.querySelector('.text-xs');
-                    if (countElement) countElement.textContent = item.count;
-                    if (percentElement) percentElement.textContent = item.percentage + '%';
-                }
-            });
+            if (total > 0) {
+                // Update completed status
+                document.getElementById('statusCompletedCount').textContent = completed;
+                document.getElementById('statusCompletedPercent').textContent = ((completed / total) * 100).toFixed(1) + '%';
+                
+                // Update in progress status
+                document.getElementById('statusInProgressCount').textContent = inProgress;
+                document.getElementById('statusInProgressPercent').textContent = ((inProgress / total) * 100).toFixed(1) + '%';
+                
+                // Update review status
+                document.getElementById('statusReviewCount').textContent = review;
+                document.getElementById('statusReviewPercent').textContent = ((review / total) * 100).toFixed(1) + '%';
+                
+                // Update pending status
+                document.getElementById('statusPendingCount').textContent = pending;
+                document.getElementById('statusPendingPercent').textContent = ((pending / total) * 100).toFixed(1) + '%';
+            } else {
+                // Reset to zero if no data
+                document.getElementById('statusCompletedCount').textContent = '0';
+                document.getElementById('statusCompletedPercent').textContent = '0%';
+                document.getElementById('statusInProgressCount').textContent = '0';
+                document.getElementById('statusInProgressPercent').textContent = '0%';
+                document.getElementById('statusReviewCount').textContent = '0';
+                document.getElementById('statusReviewPercent').textContent = '0%';
+                document.getElementById('statusPendingCount').textContent = '0';
+                document.getElementById('statusPendingPercent').textContent = '0%';
+            }
         }
 
         // Update group cards with real data from Google Sheets
@@ -2213,33 +2264,114 @@
                         label: 'ความสำเร็จ (%)',
                         data: groupRates,
                         backgroundColor: ['#3B82F6', '#10B981', '#8B5CF6', '#F59E0B'],
-                        borderRadius: 8
+                        borderRadius: 8,
+                        borderWidth: 2,
+                        borderColor: ['#2563EB', '#059669', '#7C3AED', '#D97706']
                     }]
                 },
                 options: {
                     responsive: true,
+                    maintainAspectRatio: false,
                     plugins: {
                         legend: {
-                            display: false
+                            display: true,
+                            position: 'top',
+                            labels: {
+                                font: {
+                                    family: 'Sarabun',
+                                    size: 14,
+                                    weight: 'bold'
+                                },
+                                color: '#374151',
+                                padding: 20,
+                                usePointStyle: true,
+                                pointStyle: 'rect'
+                            }
                         },
-                        datalabels: {
-                            anchor: 'end',
-                            align: 'top',
-                            color: '#374151',
-                            font: {
-                                weight: 'bold',
-                                size: 12
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleColor: '#fff',
+                            bodyColor: '#fff',
+                            borderColor: '#374151',
+                            borderWidth: 1,
+                            titleFont: {
+                                family: 'Sarabun',
+                                size: 14,
+                                weight: 'bold'
                             },
-                            formatter: function(value) {
-                                return value + '%';
+                            bodyFont: {
+                                family: 'Sarabun',
+                                size: 13
+                            },
+                            callbacks: {
+                                title: function(context) {
+                                    return '📊 ' + context[0].label;
+                                },
+                                label: function(context) {
+                                    return '✅ ความสำเร็จ: ' + context.parsed.y + '%';
+                                }
                             }
                         }
                     },
                     scales: {
                         y: {
                             beginAtZero: true,
-                            max: 100
+                            max: 100,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '%';
+                                },
+                                color: '#6B7280',
+                                font: {
+                                    family: 'Sarabun',
+                                    size: 12,
+                                    weight: 'bold'
+                                }
+                            },
+                            grid: {
+                                color: '#E5E7EB',
+                                drawBorder: false
+                            },
+                            title: {
+                                display: true,
+                                text: '📈 เปอร์เซ็นต์ความสำเร็จ',
+                                color: '#374151',
+                                font: {
+                                    family: 'Sarabun',
+                                    size: 14,
+                                    weight: 'bold'
+                                }
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: '#374151',
+                                font: {
+                                    family: 'Sarabun',
+                                    size: 11,
+                                    weight: 'bold'
+                                },
+                                maxRotation: 45,
+                                minRotation: 0
+                            },
+                            grid: {
+                                display: false
+                            },
+                            title: {
+                                display: true,
+                                text: '🏢 กลุ่มงาน',
+                                color: '#374151',
+                                font: {
+                                    family: 'Sarabun',
+                                    size: 14,
+                                    weight: 'bold'
+                                }
+                            }
                         }
+                    },
+                    animation: {
+                        duration: 1500,
+                        easing: 'easeInOutQuart'
                     },
                     onHover: (event, activeElements) => {
                         event.native.target.style.cursor = activeElements.length > 0 ? 'pointer' : 'default';
@@ -2252,11 +2384,21 @@
                             const meta = chart.getDatasetMeta(i);
                             meta.data.forEach((bar, index) => {
                                 const data = dataset.data[index];
+                                
+                                // Draw percentage on top of bar
                                 ctx.fillStyle = '#374151';
-                                ctx.font = 'bold 12px Sarabun';
+                                ctx.font = 'bold 16px Sarabun';
                                 ctx.textAlign = 'center';
                                 ctx.textBaseline = 'bottom';
-                                ctx.fillText(data + '%', bar.x, bar.y - 5);
+                                ctx.fillText(data + '%', bar.x, bar.y - 8);
+                                
+                                // Draw icon inside bar if bar is tall enough
+                                if (bar.height > 30) {
+                                    ctx.font = '20px Arial';
+                                    ctx.textBaseline = 'middle';
+                                    const icons = ['📋', '📚', '🔬', '🙏'];
+                                    ctx.fillText(icons[index] || '📊', bar.x, bar.y + bar.height / 2);
+                                }
                             });
                         });
                     }
@@ -2268,12 +2410,14 @@
             window.statusChart = new Chart(statusCtx, {
                 type: 'doughnut',
                 data: {
-                    labels: ['เสร็จสิ้น', 'กำลังดำเนินการ', 'รอตรวจสอบ', 'รอการอนุมัติ'],
+                    labels: ['✅ เสร็จสิ้น', '🔄 กำลังดำเนินการ', '🔍 รอตรวจสอบ', '⏳ รอการอนุมัติ'],
                     datasets: [{
                         data: [completed, inProgress, review, pending],
                         backgroundColor: ['#10B981', '#3B82F6', '#8B5CF6', '#F59E0B'],
-                        borderWidth: 2,
-                        borderColor: '#ffffff'
+                        borderWidth: 3,
+                        borderColor: '#ffffff',
+                        hoverBackgroundColor: ['#059669', '#2563EB', '#7C3AED', '#D97706'],
+                        hoverBorderWidth: 4
                     }]
                 },
                 options: {
@@ -2281,41 +2425,136 @@
                     maintainAspectRatio: false,
                     plugins: {
                         legend: {
-                            display: false
+                            display: true,
+                            position: 'bottom',
+                            labels: {
+                                font: {
+                                    family: 'Sarabun',
+                                    size: 13,
+                                    weight: 'bold'
+                                },
+                                color: '#374151',
+                                padding: 15,
+                                usePointStyle: true,
+                                pointStyle: 'circle',
+                                generateLabels: function(chart) {
+                                    const data = chart.data;
+                                    const total = data.datasets[0].data.reduce((a, b) => a + b, 0);
+                                    
+                                    return data.labels.map((label, index) => {
+                                        const value = data.datasets[0].data[index];
+                                        const percentage = total > 0 ? ((value * 100) / total).toFixed(1) : 0;
+                                        
+                                        return {
+                                            text: `${label} (${value} งาน - ${percentage}%)`,
+                                            fillStyle: data.datasets[0].backgroundColor[index],
+                                            strokeStyle: data.datasets[0].borderColor,
+                                            lineWidth: 2,
+                                            hidden: false,
+                                            index: index
+                                        };
+                                    });
+                                }
+                            }
                         },
                         tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleColor: '#fff',
+                            bodyColor: '#fff',
+                            borderColor: '#374151',
+                            borderWidth: 1,
+                            titleFont: {
+                                family: 'Sarabun',
+                                size: 14,
+                                weight: 'bold'
+                            },
+                            bodyFont: {
+                                family: 'Sarabun',
+                                size: 13
+                            },
                             callbacks: {
+                                title: function(context) {
+                                    return '📊 ' + context[0].label;
+                                },
                                 label: function(context) {
                                     const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                    const percentage = ((context.parsed * 100) / total).toFixed(1);
-                                    return context.label + ': ' + context.parsed + ' (' + percentage + '%)';
+                                    const percentage = total > 0 ? ((context.parsed * 100) / total).toFixed(1) : 0;
+                                    return `จำนวน: ${context.parsed} งาน (${percentage}%)`;
                                 }
                             }
                         }
                     },
-                    cutout: '60%'
+                    cutout: '55%',
+                    animation: {
+                        animateRotate: true,
+                        animateScale: true,
+                        duration: 1500,
+                        easing: 'easeInOutQuart'
+                    },
+                    onHover: (event, activeElements) => {
+                        event.native.target.style.cursor = activeElements.length > 0 ? 'pointer' : 'default';
+                    }
                 },
                 plugins: [{
                     afterDatasetsDraw: function(chart) {
                         const ctx = chart.ctx;
                         const total = chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
                         
-                        // Draw center text
+                        // Draw center content
                         ctx.save();
-                        ctx.font = 'bold 24px Sarabun';
-                        ctx.fillStyle = '#374151';
-                        ctx.textAlign = 'center';
-                        ctx.textBaseline = 'middle';
                         
                         const centerX = (chart.chartArea.left + chart.chartArea.right) / 2;
                         const centerY = (chart.chartArea.top + chart.chartArea.bottom) / 2;
                         
-                        ctx.fillText(total, centerX, centerY - 10);
+                        // Draw total number
+                        ctx.font = 'bold 28px Sarabun';
+                        ctx.fillStyle = '#374151';
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        ctx.fillText(total, centerX, centerY - 15);
                         
-                        ctx.font = '14px Sarabun';
+                        // Draw label
+                        ctx.font = 'bold 14px Sarabun';
                         ctx.fillStyle = '#6B7280';
-                        ctx.fillText('งานทั้งหมด', centerX, centerY + 15);
+                        ctx.fillText('งานทั้งหมด', centerX, centerY + 10);
+                        
+                        // Draw icon
+                        ctx.font = '16px Arial';
+                        ctx.fillStyle = '#EC4899';
+                        ctx.fillText('📊', centerX, centerY + 30);
+                        
                         ctx.restore();
+                        
+                        // Draw percentage labels on segments if they're large enough
+                        const meta = chart.getDatasetMeta(0);
+                        meta.data.forEach((segment, index) => {
+                            const value = chart.data.datasets[0].data[index];
+                            const percentage = total > 0 ? ((value * 100) / total).toFixed(1) : 0;
+                            
+                            // Only show percentage if segment is large enough (>5%)
+                            if (percentage > 5) {
+                                const angle = segment.startAngle + (segment.endAngle - segment.startAngle) / 2;
+                                const radius = (segment.innerRadius + segment.outerRadius) / 2;
+                                
+                                const x = centerX + Math.cos(angle) * radius;
+                                const y = centerY + Math.sin(angle) * radius;
+                                
+                                ctx.save();
+                                ctx.font = 'bold 12px Sarabun';
+                                ctx.fillStyle = '#ffffff';
+                                ctx.textAlign = 'center';
+                                ctx.textBaseline = 'middle';
+                                
+                                // Add shadow for better visibility
+                                ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+                                ctx.shadowBlur = 2;
+                                ctx.shadowOffsetX = 1;
+                                ctx.shadowOffsetY = 1;
+                                
+                                ctx.fillText(percentage + '%', x, y);
+                                ctx.restore();
+                            }
+                        });
                     }
                 }]
             });
@@ -2717,17 +2956,9 @@
                 // Update all components
                 updateTaskTable();
                 updateManagementTasks();
-                
-                // Update dashboard and staff data safely with delay
-                setTimeout(() => {
-                    try {
-                        updateDashboardData();
-                        populateStaffOptions();
-                        updateStaffPerformance();
-                    } catch (chartError) {
-                        console.error('Chart update error (non-critical):', chartError);
-                    }
-                }, 200);
+                updateDashboardData();
+                populateStaffOptions();
+                updateStaffPerformance();
                 
                 // Show success message
                 Swal.fire({
@@ -2820,12 +3051,9 @@
                 // Initialize UI components
                 initDataTable();
                 updateManagementTasks();
-                
-                // Initialize dashboard data safely with delay
-                setTimeout(() => {
-                    updateDashboardData();
-                    populateStaffOptions();
-                }, 200);
+                updateDashboardData();
+                populateStaffOptions();
+                updateStaffPerformance();
                 
                 console.log('🎉 ระบบเริ่มต้นเสร็จสมบูรณ์');
                 
@@ -2836,8 +3064,6 @@
                 tasks = [];
                 initDataTable();
                 updateManagementTasks();
-                updateDashboardData();
-                populateStaffOptions();
                 
                 // Show error message
                 Swal.fire({
@@ -2849,5 +3075,5 @@
             }
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96f8dde641b67b58',t:'MTc1NTI2Mjc0MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96f95b9447497b56',t:'MTc1NTI2Nzg4OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
